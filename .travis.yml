@@ -1,0 +1,8 @@
+env:
+  - PLATFORMIO_CI_SRC=test/test_example.cpp
+
+install:
+  - pip install -U platformio
+
+script:
+  - platformio test
