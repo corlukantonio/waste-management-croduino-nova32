@@ -1,2 +1,3 @@
 # waste-management-croduino-nova32
-Master Thesis @ Faculty of Organization and Informatics, University of Zagreb - Project - Waste management (firmware for Croduino Nova32 board)
+
+[![Build Status](https://app.travis-ci.com/corlukantonio/waste-management-croduino-nova32.svg?token=LFYd3nvNM4EhiD43TsCb&branch=main)](https://app.travis-ci.com/corlukantonio/waste-management-croduino-nova32)
