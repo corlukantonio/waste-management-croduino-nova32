@@ -1,9 +1,3 @@
-compiler: clang
-
-env:
-  - PLATFORMIO_CI_SRC=test/test_example.cpp
-  - PLATFORMIO_CI_SRC=platformio.ini
-
 install:
   - pip install -U platformio
 
