@@ -1,13 +1,13 @@
-#include <Arduino.h>
+#include "components/installer/public/installer.h"
 
+#if TEST_MAIN == 0
 void setup()
 {
-  // Serial.begin(9600);
+  Installer::GetInstance()->Setup();
 }
 
 void loop()
 {
-  // Serial.println("Hello World!");
-
-  // delay(1000);
+  Installer::GetInstance()->Loop();
 }
+#endif
