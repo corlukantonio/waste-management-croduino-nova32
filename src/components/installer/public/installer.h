@@ -1,3 +1,4 @@
+#ifdef TARGET_ESP32DEV
 #include <Arduino.h>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
@@ -90,3 +91,4 @@ private:
   uint8_t ultrasonicSensEchoPin;   //!< Ultrasonic sensor echo pin.
   uint8_t ultrasonicSensTrigPin;   //!< Ultrasonic sensor trig pin.
 };
+#endif

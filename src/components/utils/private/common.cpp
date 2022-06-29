@@ -105,14 +105,20 @@ const Common::BytesPackage *Common::GetPackageWithArgsInBytes(TPackage **pBasePa
 // Explicit instantiations for `GetPackageWithArgsInBytes` method.
 
 template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
-    Common::ObjectRecordBasePackage,
-    Common::ObjectRecordValue<double> *,
-    Common::ObjectRecordValue<double> *,
-    Common::ObjectRecordValue<double> *>(
-    Common::ObjectRecordBasePackage **pBasePackage,
-    Common::ObjectRecordValue<double> *pArg1,
-    Common::ObjectRecordValue<double> *pArg2,
-    Common::ObjectRecordValue<double> *pArg3) const;
+    Common::ObjectRegistrationRequestPackage>(
+    Common::ObjectRegistrationRequestPackage **pObjectRegistrationRequestPackage) const;
+
+template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
+    Common::ObjectActivationRequestPackage>(
+    Common::ObjectActivationRequestPackage **pObjectActivationRequestPackage) const;
+
+template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
+    Common::ObjectRecordConfigRequestPackage>(
+    Common::ObjectRecordConfigRequestPackage **pObjectRecordConfigRequestPackage) const;
+
+template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
+    Common::ObjectRecordConfigApprovalRequestPackage>(
+    Common::ObjectRecordConfigApprovalRequestPackage **pObjectRecordConfigApprovalRequestPackage) const;
 
 template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
     Common::ObjectRecordBasePackage,
@@ -125,5 +131,15 @@ template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
     Common::ObjectRecordValue<int> *pArg2,
     Common::ObjectRecordValue<float> *pArg3,
     Common::ObjectRecordValue<uint8_t> *pArg4) const;
+
+template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
+    Common::ObjectRecordBasePackage,
+    Common::ObjectRecordValue<double> *,
+    Common::ObjectRecordValue<double> *,
+    Common::ObjectRecordValue<double> *>(
+    Common::ObjectRecordBasePackage **pBasePackage,
+    Common::ObjectRecordValue<double> *pArg1,
+    Common::ObjectRecordValue<double> *pArg2,
+    Common::ObjectRecordValue<double> *pArg3) const;
 
 // End of `GetPackageWithArgsInBytes` method explicit instantiations.
