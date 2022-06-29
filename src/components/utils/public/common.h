@@ -1,4 +1,9 @@
+#ifdef TARGET_ESP32DEV
 #include <Arduino.h>
+#else
+#include <iostream>
+#include <cstring>
+#endif
 
 #include <type_traits>
 
@@ -70,6 +75,7 @@ public:
     uint8_t packageVersion;
     uint8_t mac[6];
     uint8_t rtc[6];
+    uint8_t crc;
   };
 #pragma pack(pop)
 
@@ -85,6 +91,7 @@ public:
     uint8_t mac[6];
     uint8_t rtc[6];
     uint8_t activationCode[4];
+    uint8_t crc;
   };
 #pragma pack(pop)
 
@@ -101,6 +108,7 @@ public:
     uint8_t rtc[6];
     uint8_t recordBasePackageVersion;
     uint8_t numberOfValues;
+    uint8_t crc;
   };
 #pragma pack(pop)
 
@@ -116,6 +124,7 @@ public:
     uint8_t mac[6];
     uint8_t rtc[6];
     uint8_t approvalCode[4];
+    uint8_t crc;
   };
 #pragma pack(pop)
 

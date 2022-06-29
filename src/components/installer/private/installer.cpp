@@ -1,5 +1,6 @@
 #include "components/installer/public/installer.h"
 
+#ifdef TARGET_ESP32DEV
 Installer *Installer::ms_pInstaller{nullptr};
 
 Installer *Installer::GetInstance()
@@ -194,3 +195,4 @@ void Installer::Loop()
     // // esp_deep_sleep_start();
     // // Serial.println("You shouldn't see this");
 }
+#endif
