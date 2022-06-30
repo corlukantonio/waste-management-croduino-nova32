@@ -4,10 +4,13 @@ python:
 compiler:
   - gcc
 addons:
-  packages:
-    - gcc-11
-    - g++11
-
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-11
+      - g++-11
+    
 install:
   - pip install -U platformio==6.0.2
   
