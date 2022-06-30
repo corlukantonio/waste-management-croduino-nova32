@@ -1,6 +1,4 @@
-language:
-  - cpp
-  - python
+language: python
 python:
   - "3.9"
 compiler:
