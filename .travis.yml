@@ -1,4 +1,6 @@
-language: python
+language:
+  - cpp
+  - python
 python:
   - "3.9"
 compiler:
@@ -8,8 +10,8 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-6.3
-      - g++-6.3
+      - gcc-6
+      - g++-6
     
 install:
   - pip install -U platformio==6.0.2
