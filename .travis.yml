@@ -1,2 +1,10 @@
+language: cpp
+sudo: required
+compiler:
+  - gcc
+
+install:
+  - pip install -U platformio
+
 script:
   - platformio test -e native
