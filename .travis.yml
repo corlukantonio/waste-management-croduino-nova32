@@ -1,2 +1,2 @@
 script:
-  - pio test -e native
+  - platformio test -e native
