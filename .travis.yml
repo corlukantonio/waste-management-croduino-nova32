@@ -6,7 +6,7 @@ python:
   - "3.9"
 
 install:
-  - pip install -U platformio
+  - pip install -U platformio==5.2.3 click==7.1.2
 
 script:
   - platformio test -e native
