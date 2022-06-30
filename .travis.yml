@@ -2,8 +2,13 @@ language: python
 python:
   - "3.9"
 compiler:
-  - clang
   - gcc
+addons:
+  pkg:
+    - gcc10
+  env:
+    - CC=gcc11
+    - CXX=g++11
 
 install:
   - pip install -U platformio==6.0.2
