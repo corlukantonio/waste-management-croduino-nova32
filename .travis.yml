@@ -4,9 +4,9 @@ python:
 compiler:
   - gcc
 addons:
-  env:
-    - CC=gcc11
-    - CXX=g++11
+  packages:
+    - gcc-11
+    - g++11
 
 install:
   - pip install -U platformio==6.0.2
