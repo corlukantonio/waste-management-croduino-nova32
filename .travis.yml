@@ -4,8 +4,6 @@ python:
 compiler:
   - gcc
 addons:
-  pkg:
-    - gcc10
   env:
     - CC=gcc11
     - CXX=g++11
