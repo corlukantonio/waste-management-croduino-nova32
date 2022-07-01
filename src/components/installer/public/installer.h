@@ -5,6 +5,7 @@
 #include <BLEServer.h>
 #include <DHT.h>
 #include <ESP32Time.h>
+#include <MQTT.h>
 #include <WiFi.h>
 
 #include "components/utils/public/common.h"
@@ -71,6 +72,20 @@ protected:
   ~Installer() = default;
 
 private:
+  /**
+   * @fn AddWiFiCredentials
+   * @brief Adds WiFi credentials.
+   *
+   * @param pWiFiSsid Pointer to the char array.
+   * @param pWiFiPassword Pointer to the char array.
+   */
+  void AddWiFiCredentials(const char *pWiFiSsid, const char *pWiFiPassword);
+
+  /**
+   * @brief Connect to WiFi network.
+   */
+  void ConnectToWiFi();
+
   /********************************
    *                              *
    * Data members.                *
@@ -82,6 +97,15 @@ private:
   static Installer *ms_pInstaller; //!< Singleton instance.
   DHT *pDht;                       //!< Pointer to `DHT` object.
   ESP32Time *pRtc;                 //!< Pointer to `ESP32Time` object.
+  MQTTClient *pMqttClient;         //!< MQTT client.
+  WiFiClient *pWiFiClient;         //!< WiFi client.
+  char **pWiFiSsids;               //!< WiFi SSIDs.
+  char **pWiFiPasswords;           //!< WiFi passwords.
+  const char *mqttServer;          //!< MQTT server.
+  int32_t mqttPort;                //!< MQTT port.
+  const char *mqttUser;            //!< MQTT user.
+  const char *mqttPassword;        //!< MQTT password.
+  char **mqttTopics;               //!< MQTT topics.
   uint8_t buzzerPin;               //!< Buzzer pin.
   uint8_t ledPin;                  //!< LED pin.
   uint8_t pirPin;                  //!< PIR motion sensor pin.
