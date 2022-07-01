@@ -7,160 +7,17 @@
 
 #include <type_traits>
 
-/********************************
- *                              *
- * Defines.                     *
- * ---------------------------- *
- *                              *
- *                              *
- ********************************/
-
-#define SERIAL_BAUD 9600
-
-#define SERVICE_UUID "5f93f3f7-75ae-4b70-bb4a-e6859be4b105"
-#define CHARACTERISTIC_UUID "0e746bf8-fb7f-4d7e-9fda-b8911cf1d599"
-
-#define OBJ_REG_REQ_PKG 0x01
-#define OBJ_REG_REQ_PKG_V 0x01
-
-#define OBJ_ACT_REQ_PKG 0x02
-#define OBJ_ACT_REQ_PKG_V 0x01
-
-#define OBJ_REC_CFG_REQ_PKG 0x03
-#define OBJ_REC_CFG_REQ_PKG_V 0x01
-
-#define OBJ_REC_CFG_APV_REQ_PKG 0x04
-#define OBJ_REC_CFG_APV_REQ_PKG_V 0x01
-
-#define OBJ_REC_BASE_PKG 0x05
-#define OBJ_REC_BASE_PKG_V 0x01
+#include "components/utils/public/common_data.h"
 
 /**
  * @class Common
  * @brief Common class.
  * @brief The Singleton class defines the `GetInstance` method that serves as an alternative to constructor and lets clients access the same instance of this class over and over. Common provides structures and methods used in multiple files.
  */
-class Common
+class Common : public CommonData
 {
 
 public:
-  /********************************
-   *                              *
-   * Structs.                     *
-   * ---------------------------- *
-   *                              *
-   *                              *
-   ********************************/
-
-#pragma pack(push, 1)
-  /**
-   * @struct BytesPackage
-   * @brief Bytes package.
-   */
-  struct BytesPackage
-  {
-    uint8_t *pBytes; //!< Byte array.
-    size_t length;   //!< Byte array length.
-  };
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-  /**
-   * @struct ObjectRegistrationRequestPackage
-   * @brief Object registration request package. This package is sent when the device wants to be registered.
-   */
-  struct ObjectRegistrationRequestPackage
-  {
-    uint8_t packageType;
-    uint8_t packageVersion;
-    uint8_t mac[6];
-    uint8_t rtc[6];
-    uint8_t crc;
-  };
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-  /**
-   * @struct ObjectActivationRequestPackage
-   * @brief Object activation request package. This package is sent when the device wants to activate its registration.
-   */
-  struct ObjectActivationRequestPackage
-  {
-    uint8_t packageType;
-    uint8_t packageVersion;
-    uint8_t mac[6];
-    uint8_t rtc[6];
-    uint8_t activationCode[4];
-    uint8_t crc;
-  };
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-  /**
-   * @struct ObjectRecordConfigRequestPackage
-   * @brief Object record config request package.
-   */
-  struct ObjectRecordConfigRequestPackage
-  {
-    uint8_t packageType;
-    uint8_t packageVersion;
-    uint8_t mac[6];
-    uint8_t rtc[6];
-    uint8_t recordBasePackageVersion;
-    uint8_t numberOfValues;
-    uint8_t crc;
-  };
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-  /**
-   * @struct ObjectRecordConfigApprovalRequestPackage
-   * @brief Object record config approval request package.
-   */
-  struct ObjectRecordConfigApprovalRequestPackage
-  {
-    uint8_t packageType;
-    uint8_t packageVersion;
-    uint8_t mac[6];
-    uint8_t rtc[6];
-    uint8_t approvalCode[4];
-    uint8_t crc;
-  };
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-  /**
-   * @struct ObjectRecordValue
-   * @brief Object record value.
-   */
-  template <class T>
-  struct ObjectRecordValue
-  {
-    uint8_t type;
-    T value;
-  };
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-  /**
-   * @brief ObjectRecordBasePackage
-   * @brief Object record base package.
-   */
-  struct ObjectRecordBasePackage
-  {
-    uint8_t packageType;
-    uint8_t packageVersion;
-    uint8_t mac[6];
-    uint8_t rtc[6];
-    uint8_t numberOfValues;
-    // ...
-    // This space will be occupied by objects of type `ObjectRecordValue`.
-    // ...
-    int16_t rssi; //!< Received Signal Strength Indicator.
-    uint8_t crc;  //!< Cyclic Redundancy Check.
-  };
-#pragma pack(pop)
-
   /********************************
    *                              *
    * Methods.                     *
@@ -188,6 +45,17 @@ public:
    * @return Singleton instance.
    */
   static Common *GetInstance();
+
+  /**
+   * @fn GetAlertMessage
+   * @brief Gets the alert message.
+   *
+   * @param[in] alertMessage Alert message.
+   * @param[in] n Number of arguments.
+   * @param ...
+   * @return constant pointer to char array.
+   */
+  const char *GetAlertMessage(AlertMessageEnum alertMessage, size_t n = 0, ...) const;
 
   /**
    * @fn GetCrc

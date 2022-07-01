@@ -18,6 +18,105 @@ Common *Common::GetInstance()
   return ms_pCommon;
 }
 
+const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...) const
+{
+  String s;
+
+  va_list args;
+  va_start(args, n);
+
+  char *message = (char *)malloc(sizeof(char) * 50);
+
+  switch (alertMessage)
+  {
+  case ALERT_MSG_WIFI_CONNECTING:
+    s = String("Connecting with \"");
+
+    for (size_t i = 0; i < n; i++)
+      s.concat(va_arg(args, char *));
+
+    s.concat("\" WiFi network.");
+
+    break;
+
+  case ALERT_MSG_WIFI_CONNECTED:
+    s = String("Connected to the \"");
+
+    for (size_t i = 0; i < n; i++)
+      s.concat(va_arg(args, char *));
+
+    s.concat("\" WiFi network.");
+
+    break;
+
+  case ALERT_MSG_WIFI_SSID_FOUND:
+    s = String("");
+
+    for (size_t i = 0; i < n; i++)
+    {
+      if (i == 0)
+      {
+        s.concat(va_arg(args, size_t) + 1);
+        s.concat(": ");
+      }
+      else if (i == 1)
+      {
+        s.concat(va_arg(args, char *));
+        s.concat(" (");
+      }
+      else if (i == 2)
+      {
+        s.concat(va_arg(args, int32_t));
+        s.concat(")");
+      }
+    }
+
+    break;
+
+  case ALERT_MSG_NETWORKS_FOUND:
+    s = String("");
+
+    for (size_t i = 0; i < n; i++)
+      s.concat(va_arg(args, size_t));
+
+    if (n == 1)
+      s.concat(" network found.");
+    else
+      s.concat(" networks found.");
+
+    break;
+
+  case ALERT_MSG_NO_NETWORKS_FOUND:
+    s = String("No networks found.");
+
+    break;
+
+  case ALERT_MSG_MAX_WIFI_CREDENTIALS:
+    s = String("The maximum number of WiFi credentials has been reached.");
+
+    break;
+
+  case ALERT_MSG_MQTT_CONNECTED:
+    s = String("Connected to the ");
+    for (size_t i = 0; i < n; i++)
+      s.concat(va_arg(args, char *));
+    s.concat(" MQTT broker.");
+
+    break;
+
+  default:
+    s = String("Undefined!");
+
+    break;
+  }
+
+  va_end(args);
+
+  strcpy(message, s.c_str());
+
+  return message;
+}
+
 const uint8_t Common::GetCrc(const uint8_t *kpData, const size_t kSize) const
 {
   uint8_t crc = 0x00;
