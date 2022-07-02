@@ -15,15 +15,15 @@ void Installer::AddWiFiCredentials(const char *pWiFiSsid, const char *pWiFiPassw
 {
     bool isMax = true;
 
-    for (size_t i = 0; i < MAX_WIFI_CREDENTIALS; i++)
+    for (size_t i = 0; i < WIFI_MAX_CREDENTIALS; i++)
     {
-        if (pWiFiSsids[i] == nullptr || pWiFiPasswords[i] == nullptr)
+        if (m_pWiFiSsids[i] == nullptr || m_pWiFiPasswords[i] == nullptr)
         {
-            pWiFiSsids[i] = (char *)malloc(sizeof(char) * 30);
-            pWiFiPasswords[i] = (char *)malloc(sizeof(char) * 30);
+            m_pWiFiSsids[i] = (char *)malloc(sizeof(char) * 30);
+            m_pWiFiPasswords[i] = (char *)malloc(sizeof(char) * 30);
 
-            memcpy(pWiFiSsids[i], pWiFiSsid, sizeof(char) * 30);
-            memcpy(pWiFiPasswords[i], pWiFiPassword, sizeof(char) * 30);
+            memcpy(m_pWiFiSsids[i], pWiFiSsid, sizeof(char) * 30);
+            memcpy(m_pWiFiPasswords[i], pWiFiPassword, sizeof(char) * 30);
 
             isMax = false;
 
@@ -32,7 +32,9 @@ void Installer::AddWiFiCredentials(const char *pWiFiSsid, const char *pWiFiPassw
     }
 
     if (isMax)
-        Serial.println(Common::GetInstance()->GetAlertMessage(Common::ALERT_MSG_MAX_WIFI_CREDENTIALS));
+    {
+        Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgWiFiMaxCredentialsReached));
+    }
 }
 
 void Installer::ConnectToWiFi()
@@ -44,20 +46,23 @@ void Installer::ConnectToWiFi()
     int32_t maxRssi = 0;
 
     if (WiFi.status() == WL_CONNECTED)
+    {
         WiFi.disconnect();
+    }
 
     n = WiFi.scanNetworks();
 
     if (n == 0)
-        Serial.println(Common::GetInstance()->GetAlertMessage(Common::ALERT_MSG_NO_NETWORKS_FOUND));
-
+    {
+        Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgWiFiNoNetworksFound));
+    }
     else
     {
-        Serial.println(Common::GetInstance()->GetAlertMessage(Common::ALERT_MSG_NETWORKS_FOUND, 1, n));
+        Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgWiFiNetworksFound, 1, n));
 
         for (size_t i = 0; i < n; ++i)
         {
-            Serial.println(Common::GetInstance()->GetAlertMessage(Common::ALERT_MSG_WIFI_SSID_FOUND, 3, i, WiFi.SSID(i).c_str(), WiFi.RSSI(i)));
+            Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgWiFiSsidFound, 3, i, WiFi.SSID(i).c_str(), WiFi.RSSI(i)));
 
             if (maxRssi < WiFi.RSSI(i) || maxRssi == 0)
             {
@@ -67,13 +72,13 @@ void Installer::ConnectToWiFi()
         }
     }
 
-    for (size_t i = 0; i < MAX_WIFI_CREDENTIALS; i++)
+    for (size_t i = 0; i < WIFI_MAX_CREDENTIALS; i++)
     {
-        if (strcmp(WiFi.SSID(index).c_str(), pWiFiSsids[i]) == 0)
+        if (strcmp(WiFi.SSID(index).c_str(), m_pWiFiSsids[i]) == 0)
         {
-            WiFi.begin(pWiFiSsids[i], pWiFiPasswords[i]);
+            WiFi.begin(m_pWiFiSsids[i], m_pWiFiPasswords[i]);
 
-            Serial.println(Common::GetInstance()->GetAlertMessage(Common::ALERT_MSG_WIFI_CONNECTING, 1, pWiFiSsids[i]));
+            Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgWiFiConnecting, 1, m_pWiFiSsids[i]));
 
             break;
         }
@@ -88,55 +93,62 @@ void Installer::ConnectToWiFi()
 
         currentMillis = millis();
 
-        if (currentMillis - startMillis >= WAIT_WIFI_CONNECTION_MS)
+        if (currentMillis - startMillis >= WIFI_WAIT_CONNECTION_MS)
+        {
             break;
+        }
 
         WiFi.reconnect();
     }
+
     Serial.println("");
 
     if (WiFi.status() == WL_CONNECTED)
-        Serial.println(Common::GetInstance()->GetAlertMessage(Common::ALERT_MSG_WIFI_CONNECTED, 1, WiFi.SSID(index).c_str()));
+    {
+        Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgWiFiConnected, 1, WiFi.SSID(index).c_str()));
+    }
 }
 
 void Installer::Setup()
 {
     Serial.begin(SERIAL_BAUD);
 
+    m_startTime = millis();
+
     // Pins.
 
-    buzzerPin = 16;
-    ledPin = 18;
-    pirPin = 4;
-    tempHumiSensPin = 15;
-    ultrasonicSensEchoPin = 17;
-    ultrasonicSensTrigPin = 23;
+    m_buzzerPin = 16;
+    m_ledPin = 18;
+    m_pirPin = 4;
+    m_tempHumiSensPin = 15;
+    m_ultrasonicSensEchoPin = 17;
+    m_ultrasonicSensTrigPin = 23;
 
-    pinMode(buzzerPin, OUTPUT);
-    pinMode(ledPin, OUTPUT);
-    pinMode(pirPin, INPUT);
-    pinMode(ultrasonicSensEchoPin, INPUT);
-    pinMode(ultrasonicSensTrigPin, OUTPUT);
+    pinMode(m_buzzerPin, OUTPUT);
+    pinMode(m_ledPin, OUTPUT);
+    pinMode(m_pirPin, INPUT);
+    pinMode(m_ultrasonicSensEchoPin, INPUT);
+    pinMode(m_ultrasonicSensTrigPin, OUTPUT);
 
-    pirPinState = LOW;
-    pirPinStatePrev = pirPinState;
+    m_pirPinState = LOW;
+    m_pirPinStatePrev = m_pirPinState;
 
-    pDht = new DHT(tempHumiSensPin, DHT11);
-    pRtc = new ESP32Time();
-    pMqttClient = new MQTTClient();
-    pWiFiClient = new WiFiClient();
+    m_pDht = new DHT(m_tempHumiSensPin, DHT11);
+    m_pRtc = new ESP32Time();
+    m_pMqttClient = new MQTTClient();
+    m_pWiFiClient = new WiFiClient();
 
-    pDht->begin();
+    m_pDht->begin();
 
     // WiFi.
 
-    pWiFiSsids = (char **)malloc(sizeof(char *) * 5);
-    pWiFiPasswords = (char **)malloc(sizeof(char *) * 5);
+    m_pWiFiSsids = (char **)malloc(sizeof(char *) * 5);
+    m_pWiFiPasswords = (char **)malloc(sizeof(char *) * 5);
 
-    for (size_t i = 0; i < MAX_WIFI_CREDENTIALS; i++)
+    for (size_t i = 0; i < WIFI_MAX_CREDENTIALS; i++)
     {
-        pWiFiSsids[i] = nullptr;
-        pWiFiPasswords[i] = nullptr;
+        m_pWiFiSsids[i] = nullptr;
+        m_pWiFiPasswords[i] = nullptr;
     }
 
     AddWiFiCredentials("HTEronet-NMHA85", "45803511");
@@ -148,44 +160,51 @@ void Installer::Setup()
 
     // MQTT.
 
-    mqttServer = "hairdresser.cloudmqtt.com";
-    mqttPort = 18972;
-    mqttUser = "jlrwtkuh";
-    mqttPassword = "vsHQvxEaOaIE";
+    m_mqttServer = "hairdresser.cloudmqtt.com";
+    m_mqttPort = 18972;
+    m_mqttUser = "jlrwtkuh";
+    m_mqttPassword = "vsHQvxEaOaIE";
 
-    pMqttClient->begin(mqttServer, mqttPort, *pWiFiClient);
+    m_pMqttClient->begin(m_mqttServer, m_mqttPort, *m_pWiFiClient);
 
-    if (!pMqttClient->connect("esp32device", mqttUser, mqttPassword))
+    if (!m_pMqttClient->connect("esp32wastebin", m_mqttUser, m_mqttPassword))
     {
-        Serial.println("MQTT connection failed!");
+        Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnectionFailed));
     }
 
-    Serial.println(Common::GetInstance()->GetAlertMessage(Common::ALERT_MSG_MQTT_CONNECTED, 1, mqttServer));
+    if (m_pMqttClient->connected())
+    {
+        Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnected, 1, m_mqttServer));
+    }
 
-    // BLEDevice::init("MyESP32Device");
-    // BLEServer *pServer = BLEDevice::createServer();
-    // BLEService *pService = pServer->createService(SERVICE_UUID);
-    // BLECharacteristic *pCharacteristic = pService->createCharacteristic(
-    //     CHARACTERISTIC_UUID,
-    //     BLECharacteristic::PROPERTY_READ |
-    //         BLECharacteristic::PROPERTY_WRITE);
+    // BLE.
 
-    // pCharacteristic->setValue("Hello World says Neil");
-    // pCharacteristic->setCallbacks(new CustomBLECharacteristicCallbacks());
-    // pService->start();
+    m_pCustomBLECharacteristicCallbacks = new CustomBLECharacteristicCallbacks();
+    m_pCustomBLEServerCallbacks = new CustomBLEServerCallbacks();
 
-    // BLEAdvertising *pAdvertising = pServer->getAdvertising();
-    // // BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-    // pAdvertising->addServiceUUID(SERVICE_UUID);
-    // pAdvertising->setScanResponse(true);
-    // pAdvertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
-    // pAdvertising->setMinPreferred(0x12);
-    // BLEDevice::startAdvertising();
-    // Serial.println("Characteristic defined! Now you can read it in your phone!");
+    BLEDevice::init(DEV_NAME);
 
-    // delay(1000);
+    m_pBleServer = BLEDevice::createServer();
+    m_pBleServer->setCallbacks(m_pCustomBLEServerCallbacks);
 
-    // delay(1000);
+    m_pBleService = m_pBleServer->createService(SERVICE_UUID);
+
+    m_pBleCharacteristic = m_pBleService->createCharacteristic(
+        CHARACTERISTIC_UUID,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);
+
+    m_pBleCharacteristic->setValue("Hello from ESP32 device.");
+    m_pBleCharacteristic->setCallbacks(m_pCustomBLECharacteristicCallbacks);
+    m_pBleService->start();
+
+    m_pBleAdvertising = m_pBleServer->getAdvertising();
+    m_pBleAdvertising->addServiceUUID(SERVICE_UUID);
+    m_pBleAdvertising->setScanResponse(true);
+    m_pBleAdvertising->setMinPreferred(0x06);
+    m_pBleAdvertising->setMinPreferred(0x12);
+    BLEDevice::startAdvertising();
+
+    Serial.println("Characteristic defined! Now you can read it in your phone!");
 
     // Common::ObjectRecordBasePackage *pObjectRecordBasePackage =
     //     (Common::ObjectRecordBasePackage *)malloc(sizeof(Common::ObjectRecordBasePackage));
@@ -230,83 +249,75 @@ void Installer::Loop()
     delay(2000);
 
     // mqttClient.publish(topic, "hello from esp32device");
-    // // int n = WiFi.scanNetworks();
 
-    // // if (n == 0)
-    // // {
-    // //     Serial.println("No networks found!");
-    // // }
-    // // else
-    // // {
-    // //     Serial.print(n);
-    // //     Serial.println(" networks found!");
+    double duration, cm;
 
-    // //     for (size_t i = 0; i < n; ++i)
-    // //     {
-    // //         Serial.println(WiFi.SSID(i));
-    // //     }
-    // // }
+    digitalWrite(m_ultrasonicSensTrigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(m_ultrasonicSensTrigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(m_ultrasonicSensTrigPin, LOW);
 
-    // double duration, cm;
+    duration = pulseIn(m_ultrasonicSensEchoPin, HIGH);
+    cm = duration / 29 / 2;
 
-    // digitalWrite(ultrasonicSensTrigPin, LOW);
-    // delayMicroseconds(2);
-    // digitalWrite(ultrasonicSensTrigPin, HIGH);
-    // delayMicroseconds(10);
-    // digitalWrite(ultrasonicSensTrigPin, LOW);
+    Serial.print("cm: ");
+    Serial.println(cm);
 
-    // duration = pulseIn(ultrasonicSensEchoPin, HIGH);
-    // cm = duration / 29 / 2;
+    delay(1000);
 
-    // Serial.print("cm: ");
-    // Serial.println(cm);
+    double humidity = m_pDht->readHumidity();
+    double temperatureCelsius = m_pDht->readTemperature();
 
-    // delay(1000);
+    if (isnan(humidity) || isnan(temperatureCelsius))
+    {
+        Serial.println("Failed to read from DHT sensor!");
+    }
 
-    // double humidity = pDht->readHumidity();
-    // double temperatureCelsius = pDht->readTemperature();
+    Serial.print("Humidity: ");
+    Serial.println(humidity);
+    Serial.print("Temperature: ");
+    Serial.println(temperatureCelsius);
 
-    // if (isnan(humidity) || isnan(temperatureCelsius))
-    // {
-    //     Serial.println("Failed to read from DHT sensor!");
-    // }
+    delay(1000);
 
-    // Serial.print("Humidity: ");
-    // Serial.println(humidity);
-    // Serial.print("Temperature: ");
-    // Serial.println(temperatureCelsius);
+    m_pirPinState = digitalRead(m_pirPin);
 
-    // delay(1000);
+    if (m_pirPinState == HIGH)
+    {
+        if (m_pirPinStatePrev == LOW)
+        {
+            Serial.println("Hey I got you!!!");
 
-    // pirPinState = digitalRead(pirPin);
+            m_pirPinStatePrev = m_pirPinState;
+        }
 
-    // if (pirPinState == HIGH)
-    // {
-    //     if (pirPinStatePrev == LOW)
-    //     {
-    //         Serial.println("Hey I got you!!!");
+        analogWrite(m_ledPin, 180);
+    }
+    else if (m_pirPinState == LOW && m_pirPinStatePrev == HIGH)
+    {
+        analogWrite(m_ledPin, LOW);
 
-    //         pirPinStatePrev = pirPinState;
-    //     }
+        Serial.println("No movement around!");
 
-    //     analogWrite(ledPin, 180);
-    // }
-    // else if (pirPinState == LOW && pirPinStatePrev == HIGH)
-    // {
-    //     analogWrite(ledPin, LOW);
+        m_pirPinStatePrev = m_pirPinState;
+    }
+    else
+    {
+        analogWrite(m_ledPin, LOW);
+    }
 
-    //     Serial.println("No movement around!");
+    m_currentTime = millis();
 
-    //     pirPinStatePrev = pirPinState;
-    // }
-    // else
-    // {
-    //     analogWrite(ledPin, LOW);
-    // }
+    if (m_pCustomBLEServerCallbacks->GetIsDeviceConnected() != 1 && m_currentTime - m_startTime >= 30000)
+    {
+        Serial.println("Going to deep sleep mode");
 
-    // // esp_sleep_enable_ext0_wakeup(GPIO_NUM_4, HIGH);
+        WiFi.disconnect();
+        WiFi.setSleep(WIFI_PS_MAX_MODEM);
 
-    // // esp_deep_sleep_start();
-    // // Serial.println("You shouldn't see this");
+        esp_sleep_enable_ext0_wakeup(GPIO_NUM_4, HIGH);
+        esp_deep_sleep_start();
+    }
 }
 #endif

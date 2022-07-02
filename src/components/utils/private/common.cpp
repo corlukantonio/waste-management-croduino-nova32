@@ -27,9 +27,10 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
 
   char *message = (char *)malloc(sizeof(char) * 50);
 
+#ifdef TARGET_ESP32DEV
   switch (alertMessage)
   {
-  case ALERT_MSG_WIFI_CONNECTING:
+  case eAlertMsgWiFiConnecting:
     s = String("Connecting with \"");
 
     for (size_t i = 0; i < n; i++)
@@ -39,7 +40,7 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
 
     break;
 
-  case ALERT_MSG_WIFI_CONNECTED:
+  case eAlertMsgWiFiConnected:
     s = String("Connected to the \"");
 
     for (size_t i = 0; i < n; i++)
@@ -49,7 +50,7 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
 
     break;
 
-  case ALERT_MSG_WIFI_SSID_FOUND:
+  case eAlertMsgWiFiSsidFound:
     s = String("");
 
     for (size_t i = 0; i < n; i++)
@@ -73,7 +74,7 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
 
     break;
 
-  case ALERT_MSG_NETWORKS_FOUND:
+  case eAlertMsgWiFiNetworksFound:
     s = String("");
 
     for (size_t i = 0; i < n; i++)
@@ -86,21 +87,26 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
 
     break;
 
-  case ALERT_MSG_NO_NETWORKS_FOUND:
+  case eAlertMsgWiFiNoNetworksFound:
     s = String("No networks found.");
 
     break;
 
-  case ALERT_MSG_MAX_WIFI_CREDENTIALS:
+  case eAlertMsgWiFiMaxCredentialsReached:
     s = String("The maximum number of WiFi credentials has been reached.");
 
     break;
 
-  case ALERT_MSG_MQTT_CONNECTED:
+  case eAlertMsgMqttConnected:
     s = String("Connected to the ");
     for (size_t i = 0; i < n; i++)
       s.concat(va_arg(args, char *));
     s.concat(" MQTT broker.");
+
+    break;
+
+  case eAlertMsgMqttConnectionFailed:
+    s = String("MQTT connection failed!");
 
     break;
 
@@ -109,6 +115,7 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
 
     break;
   }
+#endif
 
   va_end(args);
 
