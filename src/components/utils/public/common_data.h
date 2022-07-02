@@ -14,8 +14,10 @@
 
 #define SERIAL_BAUD 9600
 
-#define MAX_WIFI_CREDENTIALS 5
-#define WAIT_WIFI_CONNECTION_MS 15000
+#define DEV_NAME "ESP32 Waste Bin"
+
+#define WIFI_MAX_CREDENTIALS 5
+#define WIFI_WAIT_CONNECTION_MS 15000
 
 #define SERVICE_UUID "5f93f3f7-75ae-4b70-bb4a-e6859be4b105"
 #define CHARACTERISTIC_UUID "0e746bf8-fb7f-4d7e-9fda-b8911cf1d599"
@@ -56,13 +58,14 @@ public:
    */
   enum AlertMessageEnum : uint8_t
   {
-    ALERT_MSG_WIFI_CONNECTING,
-    ALERT_MSG_WIFI_CONNECTED,
-    ALERT_MSG_WIFI_SSID_FOUND,
-    ALERT_MSG_NETWORKS_FOUND,
-    ALERT_MSG_NO_NETWORKS_FOUND,
-    ALERT_MSG_MAX_WIFI_CREDENTIALS,
-    ALERT_MSG_MQTT_CONNECTED
+    eAlertMsgWiFiConnecting,
+    eAlertMsgWiFiConnected,
+    eAlertMsgWiFiSsidFound,
+    eAlertMsgWiFiNetworksFound,
+    eAlertMsgWiFiNoNetworksFound,
+    eAlertMsgWiFiMaxCredentialsReached,
+    eAlertMsgMqttConnected,
+    eAlertMsgMqttConnectionFailed
   };
 
   /********************************

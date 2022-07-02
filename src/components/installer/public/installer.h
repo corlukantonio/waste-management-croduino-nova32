@@ -10,6 +10,7 @@
 
 #include "components/utils/public/common.h"
 #include "components/utils/public/custom_ble_characteristic_callbacks.h"
+#include "components/utils/public/custom_ble_server_callbacks.h"
 
 /**
  * @class Installer
@@ -94,25 +95,33 @@ private:
    *                              *
    ********************************/
 
-  static Installer *ms_pInstaller; //!< Singleton instance.
-  DHT *pDht;                       //!< Pointer to `DHT` object.
-  ESP32Time *pRtc;                 //!< Pointer to `ESP32Time` object.
-  MQTTClient *pMqttClient;         //!< MQTT client.
-  WiFiClient *pWiFiClient;         //!< WiFi client.
-  char **pWiFiSsids;               //!< WiFi SSIDs.
-  char **pWiFiPasswords;           //!< WiFi passwords.
-  const char *mqttServer;          //!< MQTT server.
-  int32_t mqttPort;                //!< MQTT port.
-  const char *mqttUser;            //!< MQTT user.
-  const char *mqttPassword;        //!< MQTT password.
-  char **mqttTopics;               //!< MQTT topics.
-  uint8_t buzzerPin;               //!< Buzzer pin.
-  uint8_t ledPin;                  //!< LED pin.
-  uint8_t pirPin;                  //!< PIR motion sensor pin.
-  uint8_t pirPinState;             //!< PIR motion sensor pin state.
-  uint8_t pirPinStatePrev;         //!< PIR motion sensor pin previous state.
-  uint8_t tempHumiSensPin;         //!< Temperature and humidity sensor pin.
-  uint8_t ultrasonicSensEchoPin;   //!< Ultrasonic sensor echo pin.
-  uint8_t ultrasonicSensTrigPin;   //!< Ultrasonic sensor trig pin.
+  static Installer *ms_pInstaller;                                       //!< Singleton instance.
+  CustomBLECharacteristicCallbacks *m_pCustomBLECharacteristicCallbacks; //!< Custom BLE characteristic callbacks.
+  CustomBLEServerCallbacks *m_pCustomBLEServerCallbacks;                 //!< Custom BLE server callbacks.
+  BLEAdvertising *m_pBleAdvertising;                                     //!< BLE advertising.
+  BLECharacteristic *m_pBleCharacteristic;                               //!< BLE characteristic.
+  BLEServer *m_pBleServer;                                               //!< BLE server.
+  BLEService *m_pBleService;                                             //!< BLE service.
+  DHT *m_pDht;                                                           //!< Pointer to `DHT` object.
+  ESP32Time *m_pRtc;                                                     //!< Pointer to `ESP32Time` object.
+  MQTTClient *m_pMqttClient;                                             //!< MQTT client.
+  WiFiClient *m_pWiFiClient;                                             //!< WiFi client.
+  char **m_pWiFiSsids;                                                   //!< WiFi SSIDs.
+  char **m_pWiFiPasswords;                                               //!< WiFi passwords.
+  const char *m_mqttServer;                                              //!< MQTT server.
+  int32_t m_mqttPort;                                                    //!< MQTT port.
+  const char *m_mqttUser;                                                //!< MQTT user.
+  const char *m_mqttPassword;                                            //!< MQTT password.
+  char **m_mqttTopics;                                                   //!< MQTT topics.
+  unsigned long m_startTime;                                             //!< Start time.
+  unsigned long m_currentTime;                                           //!< Current time.
+  uint8_t m_buzzerPin;                                                   //!< Buzzer pin.
+  uint8_t m_ledPin;                                                      //!< LED pin.
+  uint8_t m_pirPin;                                                      //!< PIR motion sensor pin.
+  uint8_t m_pirPinState;                                                 //!< PIR motion sensor pin state.
+  uint8_t m_pirPinStatePrev;                                             //!< PIR motion sensor pin previous state.
+  uint8_t m_tempHumiSensPin;                                             //!< Temperature and humidity sensor pin.
+  uint8_t m_ultrasonicSensEchoPin;                                       //!< Ultrasonic sensor echo pin.
+  uint8_t m_ultrasonicSensTrigPin;                                       //!< Ultrasonic sensor trig pin.
 };
 #endif

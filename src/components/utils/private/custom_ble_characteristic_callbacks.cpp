@@ -7,10 +7,7 @@ void CustomBLECharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristi
 
   if (rxValue.length() > 0)
   {
-    for (size_t i = 0; i < rxValue.length(); i++)
-    {
-      Serial.println(rxValue[i]);
-    }
+    Serial.println(rxValue);
   }
 }
 #endif
