@@ -20,6 +20,7 @@ Common *Common::GetInstance()
 
 const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...) const
 {
+#ifdef TARGET_ESP32DEV
   String s;
 
   va_list args;
@@ -27,7 +28,6 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
 
   char *message = (char *)malloc(sizeof(char) * 50);
 
-#ifdef TARGET_ESP32DEV
   switch (alertMessage)
   {
   case eAlertMsgWiFiConnecting:
@@ -115,13 +115,13 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
 
     break;
   }
-#endif
 
   va_end(args);
 
   strcpy(message, s.c_str());
 
   return message;
+#endif
 }
 
 const uint8_t Common::GetCrc(const uint8_t *kpData, const size_t kSize) const

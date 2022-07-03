@@ -1,3 +1,6 @@
+#ifndef COMMON_DATA_H_
+#define COMMON_DATA_H_
+
 #ifdef TARGET_ESP32DEV
 #include <Arduino.h>
 #else
@@ -54,6 +57,7 @@ public:
    ********************************/
 
   /**
+   * @enum AlertMessageEnum
    * @brief Alert message enum.
    */
   enum AlertMessageEnum : uint8_t
@@ -187,3 +191,5 @@ public:
   };
 #pragma pack(pop)
 };
+
+#endif // COMMON_DATA_H_
