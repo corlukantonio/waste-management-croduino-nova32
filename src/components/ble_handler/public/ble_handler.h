@@ -9,6 +9,10 @@
 #include <BLEServer.h>
 #include <freertos/semphr.h>
 
+#include <vector>
+#include <queue>
+
+#include "components/installer/public/installer.h"
 #include "components/task_handler/public/task_handler.h"
 #include "components/utils/public/common.h"
 #include "components/utils/public/custom_ble_characteristic_callbacks.h"
@@ -20,11 +24,21 @@ class BleHandler : public TaskHandler
 public:
   /********************************
    *                              *
-   * Methods.                     *
+   * Structs.                     *
    * ---------------------------- *
    *                              *
    *                              *
    ********************************/
+
+  /**
+   * @struct BleCallback
+   * @brief BLE callback.
+   */
+  struct BleCallback
+  {
+    String name;
+    TCallback cb;
+  };
 
   /**
    * @brief Constructor.
@@ -39,6 +53,22 @@ public:
    * @brief Destructor.
    */
   ~BleHandler() = default;
+
+  /********************************
+   *                              *
+   * Methods.                     *
+   * ---------------------------- *
+   *                              *
+   *                              *
+   ********************************/
+
+  /**
+   * @brief Adds callback.
+   *
+   * @param[in] name Callback name.
+   * @param[in] cb Callback function.
+   */
+  void AddCallback(const char *name, TCallback cb);
 
 protected:
   virtual void Task() override final;
@@ -59,6 +89,8 @@ private:
   BLECharacteristic *m_pBleCharacteristic;                               //!< BLE characteristic.
   BLEServer *m_pBleServer;                                               //!< BLE server.
   BLEService *m_pBleService;                                             //!< BLE service.
+  std::vector<BleCallback> m_vBleCallbacks;                              //!< BLE callbacks.
+  std::queue<String> m_qBleCallbacks;                                    //!< BLE callbacks queue.
 };
 
 #endif

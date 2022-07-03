@@ -14,14 +14,6 @@ class WiFiHandler : public TaskHandler
 {
 
 public:
-  /********************************
-   *                              *
-   * Methods.                     *
-   * ---------------------------- *
-   *                              *
-   *                              *
-   ********************************/
-
   /**
    * @brief Constructor.
    *
@@ -36,6 +28,21 @@ public:
    */
   ~WiFiHandler() = default;
 
+  /********************************
+   *                              *
+   * Methods.                     *
+   * ---------------------------- *
+   *                              *
+   *                              *
+   ********************************/
+
+  /**
+   * @brief Gets the connection status of the device via WiFi.
+   *
+   * @return Device connection status via WiFi.
+   */
+  bool GetIsDeviceConnected() const;
+
 protected:
   virtual void Task() override final;
 
@@ -44,8 +51,8 @@ private:
    * @fn AddWiFiCredentials
    * @brief Adds WiFi credentials.
    *
-   * @param pWiFiSsid Pointer to the WiFi SSID.
-   * @param pWiFiPassword Pointer to the WiFi password.
+   * @param[in] pWiFiSsid Pointer to the WiFi SSID.
+   * @param[in] pWiFiPassword Pointer to the WiFi password.
    */
   void AddWiFiCredentials(const char *pWiFiSsid, const char *pWiFiPassword);
 
@@ -65,6 +72,7 @@ private:
   SemaphoreHandle_t m_mutex; //!< Mutex.
   char **m_pWiFiSsids;       //!< WiFi SSIDs.
   char **m_pWiFiPasswords;   //!< WiFi passwords.
+  bool m_isDeviceConnected;  //!< Is device connected.
 };
 
 #endif

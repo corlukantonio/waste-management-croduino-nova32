@@ -10,11 +10,28 @@
 
 #include "components/task_handler/public/task_handler.h"
 #include "components/utils/public/common.h"
+#include "components/wifi_handler/public/wifi_handler.h"
 
 class MqttHandler : public TaskHandler
 {
 
 public:
+  /**
+   * @brief Constructor.
+   *
+   * @param[in] pName Pointer to the application name.
+   * @param[in] stackDepth Stack depth.
+   * @param[in] pTaskHandler Pointer to the task handler.
+   * @param[in] pWiFiHandler Pointer to WiFi handler.
+   */
+  MqttHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler, WiFiHandler *pWiFiHandler);
+
+  /**
+   * @brief Destructor.
+   */
+  ~MqttHandler() = default;
+
+protected:
   /********************************
    *                              *
    * Methods.                     *
@@ -23,21 +40,6 @@ public:
    *                              *
    ********************************/
 
-  /**
-   * @brief Constructor.
-   *
-   * @param[in] pName Pointer to the application name.
-   * @param[in] stackDepth Stack depth.
-   * @param[in] pTaskHandler Pointer to the task handler.
-   */
-  MqttHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler);
-
-  /**
-   * @brief Destructor.
-   */
-  ~MqttHandler() = default;
-
-protected:
   virtual void Task() override final;
 
 private:
@@ -49,14 +51,15 @@ private:
    *                              *
    ********************************/
 
-  SemaphoreHandle_t m_mutex;  //!< Mutex.
-  MQTTClient *m_pMqttClient;  //!< MQTT client.
-  WiFiClient *m_pWiFiClient;  //!< WiFi client.
-  const char *m_mqttServer;   //!< MQTT server.
-  int32_t m_mqttPort;         //!< MQTT port.
-  const char *m_mqttUser;     //!< MQTT user.
-  const char *m_mqttPassword; //!< MQTT password.
-  char **m_mqttTopics;        //!< MQTT topics.
+  SemaphoreHandle_t m_mutex;   //!< Mutex.
+  MQTTClient *m_pMqttClient;   //!< MQTT client.
+  WiFiClient *m_pWiFiClient;   //!< WiFi client.
+  WiFiHandler *m_pWiFiHandler; //!< WiFi handler.
+  const char *m_mqttServer;    //!< MQTT server.
+  int32_t m_mqttPort;          //!< MQTT port.
+  const char *m_mqttUser;      //!< MQTT user.
+  const char *m_mqttPassword;  //!< MQTT password.
+  char **m_mqttTopics;         //!< MQTT topics.
 };
 
 #endif

@@ -12,7 +12,7 @@ Installer *Installer::GetInstance()
     return ms_pInstaller;
 }
 
-void Installer::InitPins()
+void Installer::InitPins(const String kData)
 {
     m_buzzerPin = 16;
     m_ledPin = 18;
@@ -26,13 +26,15 @@ void Installer::InitPins()
     pinMode(m_pirPin, INPUT);
     pinMode(m_ultrasonicSensEchoPin, INPUT);
     pinMode(m_ultrasonicSensTrigPin, OUTPUT);
+
+    Serial.println("Init pins.");
 }
 
 void Installer::Setup()
 {
     Serial.begin(SERIAL_BAUD);
 
-    InitPins();
+    InitPins("");
 
     m_startTime = millis();
     m_pirPinState = LOW;
@@ -49,7 +51,9 @@ void Installer::Setup()
 
     BleHandler *pBleHandler = new BleHandler("BleHandler", 4096, &taskBleHandler);
     WiFiHandler *pWiFiHandler = new WiFiHandler("WiFiHandler", 2048, &taskWiFiHandler);
-    MqttHandler *pMqttHandler = new MqttHandler("MqttHandler", 2048, &taskMqttHandler);
+    MqttHandler *pMqttHandler = new MqttHandler("MqttHandler", 2048, &taskMqttHandler, pWiFiHandler);
+
+    pBleHandler->AddCallback("installer.initpins", std::bind(&Installer::InitPins, this, std::placeholders::_1));
 
     while (true)
     {

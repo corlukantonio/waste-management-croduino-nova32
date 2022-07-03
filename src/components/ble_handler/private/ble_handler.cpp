@@ -12,8 +12,17 @@ BleHandler::BleHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTa
     Serial.println("Mutex can not be created.");
   }
 
-  m_pCustomBLECharacteristicCallbacks = new CustomBLECharacteristicCallbacks();
+  m_pCustomBLECharacteristicCallbacks = new CustomBLECharacteristicCallbacks(&m_qBleCallbacks);
   m_pCustomBLEServerCallbacks = new CustomBLEServerCallbacks();
+}
+
+void BleHandler::AddCallback(const char *name, TCallback cb)
+{
+  xSemaphoreTake(m_mutex, portMAX_DELAY);
+
+  m_vBleCallbacks.push_back(BleCallback{name, cb});
+
+  xSemaphoreGive(m_mutex);
 }
 
 void BleHandler::Task()
@@ -41,6 +50,26 @@ void BleHandler::Task()
   BLEDevice::startAdvertising();
 
   Serial.println("Characteristic defined! Now you can read it in your phone!");
+
+  while (true)
+  {
+    if (!m_qBleCallbacks.empty())
+    {
+      for (BleCallback bleCallback : m_vBleCallbacks)
+      {
+        if (bleCallback.name.equals(m_qBleCallbacks.front()))
+        {
+          bleCallback.cb("");
+
+          break;
+        }
+      }
+
+      m_qBleCallbacks.pop();
+    }
+
+    delay(1000);
+  }
 }
 
 #endif
