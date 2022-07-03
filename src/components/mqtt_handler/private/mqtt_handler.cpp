@@ -2,8 +2,9 @@
 
 #ifdef TARGET_ESP32DEV
 
-MqttHandler::MqttHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler)
-    : TaskHandler(pName, stackDepth, pTaskHandler)
+MqttHandler::MqttHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler, WiFiHandler *pWiFiHandler)
+    : TaskHandler(pName, stackDepth, pTaskHandler),
+      m_pWiFiHandler(pWiFiHandler)
 {
   m_mutex = xSemaphoreCreateMutex();
 
@@ -23,16 +24,26 @@ void MqttHandler::Task()
   m_mqttUser = "jlrwtkuh";
   m_mqttPassword = "vsHQvxEaOaIE";
 
-  m_pMqttClient->begin(m_mqttServer, m_mqttPort, *m_pWiFiClient);
-
-  if (!m_pMqttClient->connect("esp32wastebin", m_mqttUser, m_mqttPassword))
+  while (true)
   {
-    Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnectionFailed));
-  }
+    if (m_pWiFiHandler->GetIsDeviceConnected())
+    {
+      m_pMqttClient->begin(m_mqttServer, m_mqttPort, *m_pWiFiClient);
 
-  if (m_pMqttClient->connected())
-  {
-    Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnected, 1, m_mqttServer));
+      if (!m_pMqttClient->connect("esp32wastebin", m_mqttUser, m_mqttPassword))
+      {
+        Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnectionFailed));
+      }
+
+      if (m_pMqttClient->connected())
+      {
+        Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnected, 1, m_mqttServer));
+      }
+
+      break;
+    }
+
+    delay(5000);
   }
 }
 

@@ -12,6 +12,8 @@
 
 #include "components/utils/public/common_data.h"
 
+typedef std::function<void(String)> TCallback;
+
 /**
  * @class Common
  * @brief Common class.

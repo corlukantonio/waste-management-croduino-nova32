@@ -11,6 +11,13 @@ WiFiHandler::WiFiHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *p
   {
     Serial.println("Mutex can not be created.");
   }
+
+  m_isDeviceConnected = false;
+}
+
+bool WiFiHandler::GetIsDeviceConnected() const
+{
+  return m_isDeviceConnected;
 }
 
 void WiFiHandler::AddWiFiCredentials(const char *pWiFiSsid, const char *pWiFiPassword)
@@ -113,6 +120,8 @@ void WiFiHandler::ConnectToWiFi()
   if (WiFi.status() == WL_CONNECTED)
   {
     Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgWiFiConnected, 1, WiFi.SSID(index).c_str()));
+
+    m_isDeviceConnected = true;
   }
 
   xSemaphoreGive(m_mutex);

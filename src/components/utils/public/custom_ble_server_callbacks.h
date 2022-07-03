@@ -30,9 +30,9 @@ public:
   bool GetIsDeviceConnected() const;
 
 private:
-  void onConnect(BLEServer *pServer) override final;
+  virtual void onConnect(BLEServer *pServer) override final;
 
-  void onDisconnect(BLEServer *pServer) override final;
+  virtual void onDisconnect(BLEServer *pServer) override final;
 
   /********************************
    *                              *

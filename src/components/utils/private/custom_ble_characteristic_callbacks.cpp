@@ -2,6 +2,11 @@
 
 #ifdef TARGET_ESP32DEV
 
+CustomBLECharacteristicCallbacks::CustomBLECharacteristicCallbacks(std::queue<String> *pqBleCallbacks)
+    : m_pqBleCallbacks(pqBleCallbacks)
+{
+}
+
 void CustomBLECharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic)
 {
   String rxValue = String(pCharacteristic->getValue().c_str());
@@ -9,6 +14,8 @@ void CustomBLECharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristi
   if (rxValue.length() > 0)
   {
     Serial.println(rxValue);
+
+    m_pqBleCallbacks->push(rxValue);
   }
 }
 

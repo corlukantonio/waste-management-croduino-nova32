@@ -21,14 +21,6 @@ class Installer
 {
 
 public:
-  /********************************
-   *                              *
-   * Methods.                     *
-   * ---------------------------- *
-   *                              *
-   *                              *
-   ********************************/
-
   /**
    * @brief Singletons should not be cloneable.
    *
@@ -40,6 +32,14 @@ public:
    * @brief Singletons should not be assignable.
    */
   void operator=(const Installer &) = delete;
+
+  /********************************
+   *                              *
+   * Methods.                     *
+   * ---------------------------- *
+   *                              *
+   *                              *
+   ********************************/
 
   /**
    * @fn GetInstance
@@ -75,8 +75,10 @@ protected:
 private:
   /**
    * @brief Initializes pins.
+   *
+   * @param[in] kData Data.
    */
-  void InitPins();
+  void InitPins(const String kData);
 
   /********************************
    *                              *
