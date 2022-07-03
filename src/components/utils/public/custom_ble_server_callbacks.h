@@ -1,4 +1,8 @@
+#ifndef CUSTOM_BLE_SERVER_CALLBACKS_H_
+#define CUSTOM_BLE_SERVER_CALLBACKS_H_
+
 #ifdef TARGET_ESP32DEV
+
 #include <Arduino.h>
 #include <BLEServer.h>
 
@@ -40,4 +44,7 @@ private:
 
   bool m_isDeviceConnected; //!< Is device connected.
 };
+
 #endif
+
+#endif // CUSTOM_BLE_SERVER_CALLBACKS_H_

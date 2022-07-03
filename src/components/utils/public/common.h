@@ -1,3 +1,6 @@
+#ifndef COMMON_H_
+#define COMMON_H_
+
 #ifdef TARGET_ESP32DEV
 #include <Arduino.h>
 #else
@@ -146,3 +149,5 @@ private:
 
   static Common *ms_pCommon; //!< Singleton instance.
 };
+
+#endif // COMMON_H_
