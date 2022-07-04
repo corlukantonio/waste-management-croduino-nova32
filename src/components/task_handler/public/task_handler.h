@@ -38,12 +38,14 @@ public:
 
 protected:
   /**
+   * @fn Task
    * @brief Main entry function for the task implementation.
    */
   virtual void Task() = 0;
 
 private:
   /**
+   * @fn StartTask
    * @brief Main entry function for starting the task.
    */
   static void StartTask(void *);

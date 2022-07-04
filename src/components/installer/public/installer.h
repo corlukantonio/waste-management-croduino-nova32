@@ -4,12 +4,11 @@
 #ifdef TARGET_ESP32DEV
 
 #include <Arduino.h>
-#include <DHT.h>
-#include <ESP32Time.h>
 
 #include "components/ble_handler/public/ble_handler.h"
 #include "components/mqtt_handler/public/mqtt_handler.h"
 #include "components/utils/public/common.h"
+#include "components/waste_bin/public/waste_bin.h"
 #include "components/wifi_handler/public/wifi_handler.h"
 
 /**
@@ -74,6 +73,7 @@ protected:
 
 private:
   /**
+   * @fn InitPins
    * @brief Initializes pins.
    *
    * @param[in] kData Data.
@@ -89,15 +89,9 @@ private:
    ********************************/
 
   static Installer *ms_pInstaller; //!< Singleton instance.
-  DHT *m_pDht;                     //!< Pointer to `DHT` object.
-  ESP32Time *m_pRtc;               //!< Pointer to `ESP32Time` object.
-  unsigned long m_startTime;       //!< Start time.
-  unsigned long m_currentTime;     //!< Current time.
   uint8_t m_buzzerPin;             //!< Buzzer pin.
   uint8_t m_ledPin;                //!< LED pin.
   uint8_t m_pirPin;                //!< PIR motion sensor pin.
-  uint8_t m_pirPinState;           //!< PIR motion sensor pin state.
-  uint8_t m_pirPinStatePrev;       //!< PIR motion sensor pin previous state.
   uint8_t m_tempHumiSensPin;       //!< Temperature and humidity sensor pin.
   uint8_t m_ultrasonicSensEchoPin; //!< Ultrasonic sensor echo pin.
   uint8_t m_ultrasonicSensTrigPin; //!< Ultrasonic sensor trig pin.

@@ -12,7 +12,9 @@
 
 #include "components/utils/public/common_data.h"
 
+#ifdef TARGET_ESP32DEV
 typedef std::function<void(String)> TCallback;
+#endif
 
 /**
  * @class Common

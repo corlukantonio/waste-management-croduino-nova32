@@ -31,6 +31,14 @@ public:
    */
   ~MqttHandler() = default;
 
+  /**
+   * @fn GetMqttClientObject
+   * @brief Gets MQTT client object.
+   *
+   * @return MQTT client object.
+   */
+  MQTTClient *GetMqttClientObject() const;
+
 protected:
   /********************************
    *                              *
