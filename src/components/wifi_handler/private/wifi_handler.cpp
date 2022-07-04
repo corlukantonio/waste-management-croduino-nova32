@@ -20,6 +20,11 @@ bool WiFiHandler::GetIsDeviceConnected() const
   return m_isDeviceConnected;
 }
 
+WiFiClass *WiFiHandler::GetWiFiClassObject() const
+{
+  return &WiFi;
+}
+
 void WiFiHandler::AddWiFiCredentials(const char *pWiFiSsid, const char *pWiFiPassword)
 {
   xSemaphoreTake(m_mutex, portMAX_DELAY);

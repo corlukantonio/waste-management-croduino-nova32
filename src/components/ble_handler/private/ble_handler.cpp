@@ -16,6 +16,11 @@ BleHandler::BleHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTa
   m_pCustomBLEServerCallbacks = new CustomBLEServerCallbacks();
 }
 
+bool BleHandler::GetIsDeviceConnected() const
+{
+  return m_pCustomBLEServerCallbacks->GetIsDeviceConnected();
+}
+
 void BleHandler::AddCallback(const char *name, TCallback cb)
 {
   xSemaphoreTake(m_mutex, portMAX_DELAY);

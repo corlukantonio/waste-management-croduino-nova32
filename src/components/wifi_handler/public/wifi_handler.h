@@ -37,11 +37,20 @@ public:
    ********************************/
 
   /**
+   * @fn GetIsDeviceConnected
    * @brief Gets the connection status of the device via WiFi.
    *
    * @return Device connection status via WiFi.
    */
   bool GetIsDeviceConnected() const;
+
+  /**
+   * @fn GetWiFiClassObject
+   * @brief Gets WiFi class object.
+   *
+   * @return WiFi class object.
+   */
+  WiFiClass *GetWiFiClassObject() const;
 
 protected:
   virtual void Task() override final;
@@ -57,6 +66,7 @@ private:
   void AddWiFiCredentials(const char *pWiFiSsid, const char *pWiFiPassword);
 
   /**
+   * @fn ConnectToWiFi
    * @brief Connects to the WiFi network.
    */
   void ConnectToWiFi();

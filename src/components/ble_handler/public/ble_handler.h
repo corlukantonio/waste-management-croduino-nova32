@@ -12,7 +12,6 @@
 #include <vector>
 #include <queue>
 
-#include "components/installer/public/installer.h"
 #include "components/task_handler/public/task_handler.h"
 #include "components/utils/public/common.h"
 #include "components/utils/public/custom_ble_characteristic_callbacks.h"
@@ -63,6 +62,15 @@ public:
    ********************************/
 
   /**
+   * @fn GetIsDeviceConnected
+   * @brief Gets the connection status of the device via BLE.
+   *
+   * @return Device connection status via BLE.
+   */
+  bool GetIsDeviceConnected() const;
+
+  /**
+   * @fn AddCallback
    * @brief Adds callback.
    *
    * @param[in] name Callback name.

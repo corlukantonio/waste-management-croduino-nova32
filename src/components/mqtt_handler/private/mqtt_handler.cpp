@@ -13,8 +13,13 @@ MqttHandler::MqttHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *p
     Serial.println("Mutex can not be created.");
   }
 
-  m_pMqttClient = new MQTTClient();
+  m_pMqttClient = new MQTTClient(256);
   m_pWiFiClient = new WiFiClient();
+}
+
+MQTTClient *MqttHandler::GetMqttClientObject() const
+{
+  return m_pMqttClient;
 }
 
 void MqttHandler::Task()
@@ -41,6 +46,16 @@ void MqttHandler::Task()
       }
 
       break;
+    }
+
+    delay(5000);
+  }
+
+  while (true)
+  {
+    if (!m_pMqttClient->connect("esp32wastebin", m_mqttUser, m_mqttPassword))
+    {
+      Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnectionFailed));
     }
 
     delay(5000);
