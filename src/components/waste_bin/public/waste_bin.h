@@ -8,7 +8,7 @@
 #include <ESP32Time.h>
 #include <freertos/semphr.h>
 
-#include "components/ble_handler/public/ble_handler.h"
+#include "components/ble/public/ble_handler.h"
 #include "components/mqtt_handler/public/mqtt_handler.h"
 #include "components/task_handler/public/task_handler.h"
 #include "components/utils/public/common.h"
@@ -25,9 +25,11 @@ public:
   /**
    * @brief Constructor.
    *
-   * @param[in] pName Pointer to the application name.
+   * @param[in] kpName Pointer to the application name.
    * @param[in] stackDepth Stack depth.
+   * @param[in] uxPriority Priority.
    * @param[in] pTaskHandler Pointer to the task handler.
+   * @param[in] xCoreID Core ID.
    * @param[in] pBleHandler Pointer to BLE handler.
    * @param[in] pWiFiHandler Pointer to WiFi handler.
    * @param[in] pMqttHandler Pointer to MQTT handler.
@@ -38,22 +40,13 @@ public:
    * @param[in] kUltrasonicSensEchoPin Ultrasonic sensor echo pin.
    * @param[in] kUltrasonicSensTrigPin Ultrasonic sensor trig pin.
    */
-  WasteBin(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler, BleHandler *pBleHandler, WiFiHandler *pWiFiHandler, MqttHandler *pMqttHandler, const uint8_t kBuzzerPin, const uint8_t kLedPin, const uint8_t kPirPin, const uint8_t kTempHumiSensPin, const uint8_t kUltrasonicSensEchoPin, const uint8_t kUltrasonicSensTrigPin);
-
-  /**
-   * @fn SendRecord
-   * @brief Sends data to the MQTT topic.
-   *
-   * @param kData Data.
-   */
-  void SendRecord(const String kData) const;
+  WasteBin(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, BleHandler *pBleHandler, WiFiHandler *pWiFiHandler, MqttHandler *pMqttHandler, const uint8_t kBuzzerPin, const uint8_t kLedPin, const uint8_t kPirPin, const uint8_t kTempHumiSensPin, const uint8_t kUltrasonicSensEchoPin, const uint8_t kUltrasonicSensTrigPin);
 
   /**
    * @brief Destructor.
    */
   ~WasteBin() = default;
 
-protected:
   /********************************
    *                              *
    * Methods.                     *
@@ -62,9 +55,18 @@ protected:
    *                              *
    ********************************/
 
+protected:
   virtual void Task() override final;
 
 private:
+  /**
+   * @fn SendRecord
+   * @brief Sends data to the MQTT topic.
+   *
+   * @param kData Data.
+   */
+  void SendRecord(const String kData) const;
+
   /********************************
    *                              *
    * Data members.                *

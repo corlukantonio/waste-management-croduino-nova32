@@ -7,13 +7,29 @@
 
 /**
  * @class TaskHandler
- * @brief TaskHandler.
  * @brief TaskHandler class.
  */
 class TaskHandler
 {
 
 public:
+  /**
+   * @brief Constructor.
+   *
+   * @param[in] kpName Pointer to the application name.
+   * @param[in] stackDepth Stack depth.
+   * @param[in] uxPriority Priority.
+   * @param[in] pTaskHandler Pointer to the task handler.
+   * @param[in] xCoreID Core ID.
+   */
+  TaskHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID);
+
+  /**
+   * @brief Destructor.
+   */
+  ~TaskHandler() = default;
+
+protected:
   /********************************
    *                              *
    * Methods.                     *
@@ -22,21 +38,6 @@ public:
    *                              *
    ********************************/
 
-  /**
-   * @brief Constructor.
-   *
-   * @param[in] pName Pointer to the application name.
-   * @param[in] stackDepth Stack depth.
-   * @param[in] pTaskHandler Pointer to the task handler.
-   */
-  TaskHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler);
-
-  /**
-   * @brief Destructor.
-   */
-  ~TaskHandler() = default;
-
-protected:
   /**
    * @fn Task
    * @brief Main entry function for the task implementation.

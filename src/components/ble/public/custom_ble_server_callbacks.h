@@ -6,6 +6,8 @@
 #include <Arduino.h>
 #include <BLEServer.h>
 
+#include "components/utils/public/common.h"
+
 /**
  * @class CustomBLEServerCallbacks
  * @brief CustomBLEServerCallbacks class.
@@ -23,6 +25,7 @@ public:
    ********************************/
 
   /**
+   * @fn GetIsDeviceConnected
    * @brief Gets the connection status of the device via BLE.
    *
    * @return Device connection status via BLE.

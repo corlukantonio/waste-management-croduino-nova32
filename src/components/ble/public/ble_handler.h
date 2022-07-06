@@ -12,11 +12,15 @@
 #include <vector>
 #include <queue>
 
+#include "components/ble/public/custom_ble_characteristic_callbacks.h"
+#include "components/ble/public/custom_ble_server_callbacks.h"
 #include "components/task_handler/public/task_handler.h"
 #include "components/utils/public/common.h"
-#include "components/utils/public/custom_ble_characteristic_callbacks.h"
-#include "components/utils/public/custom_ble_server_callbacks.h"
 
+/**
+ * @class BleHandler
+ * @brief BleHandler class.
+ */
 class BleHandler : public TaskHandler
 {
 
@@ -42,11 +46,13 @@ public:
   /**
    * @brief Constructor.
    *
-   * @param[in] pName Pointer to the application name.
+   * @param[in] kpName Pointer to the application name.
    * @param[in] stackDepth Stack depth.
+   * @param[in] uxPriority Priority.
    * @param[in] pTaskHandler Pointer to the task handler.
+   * @param[in] xCoreID Core ID.
    */
-  BleHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler);
+  BleHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID);
 
   /**
    * @brief Destructor.
@@ -73,10 +79,10 @@ public:
    * @fn AddCallback
    * @brief Adds callback.
    *
-   * @param[in] name Callback name.
+   * @param[in] kpName Callback name.
    * @param[in] cb Callback function.
    */
-  void AddCallback(const char *name, TCallback cb);
+  void AddCallback(const char *kpName, TCallback cb);
 
 protected:
   virtual void Task() override final;

@@ -5,7 +5,7 @@
 
 #include <Arduino.h>
 
-#include "components/ble_handler/public/ble_handler.h"
+#include "components/ble/public/ble_handler.h"
 #include "components/mqtt_handler/public/mqtt_handler.h"
 #include "components/utils/public/common.h"
 #include "components/waste_bin/public/waste_bin.h"
@@ -78,7 +78,7 @@ private:
    *
    * @param[in] kData Data.
    */
-  void InitPins(const String kData);
+  void InitPins(const String kData = "");
 
   /********************************
    *                              *

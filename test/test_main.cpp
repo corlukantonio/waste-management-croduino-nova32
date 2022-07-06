@@ -377,8 +377,8 @@ int RunSrcTests(void)
     return UNITY_END();
 }
 
-#ifdef TARGET_ESP32DEV
 #if TEST_MAIN == 1
+#ifdef TARGET_ESP32DEV
 void setup()
 {
     RunSrcTests();
@@ -387,9 +387,7 @@ void setup()
 void loop()
 {
 }
-#endif
 #elif defined(TARGET_NATIVE)
-#if TEST_MAIN == 1
 int main(int argc, char **argv)
 {
     RunSrcTests();

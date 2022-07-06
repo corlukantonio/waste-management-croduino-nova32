@@ -2,14 +2,23 @@
 
 #ifdef TARGET_ESP32DEV
 
-WiFiHandler::WiFiHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler)
-    : TaskHandler(pName, stackDepth, pTaskHandler)
+WiFiHandler::WiFiHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID)
+    : TaskHandler(kpName, stackDepth, uxPriority, pTaskHandler, xCoreID)
 {
   m_mutex = xSemaphoreCreateMutex();
 
   if (m_mutex == NULL)
   {
-    Serial.println("Mutex can not be created.");
+    Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMutexNotCreated));
+  }
+
+  m_pWiFiSsids = (char **)malloc(sizeof(char *) * WIFI_CREDS_MAX);
+  m_pWiFiPasswords = (char **)malloc(sizeof(char *) * WIFI_CREDS_MAX);
+
+  for (size_t i = 0; i < WIFI_CREDS_MAX; i++)
+  {
+    m_pWiFiSsids[i] = nullptr;
+    m_pWiFiPasswords[i] = nullptr;
   }
 
   m_isDeviceConnected = false;
@@ -25,21 +34,21 @@ WiFiClass *WiFiHandler::GetWiFiClassObject() const
   return &WiFi;
 }
 
-void WiFiHandler::AddWiFiCredentials(const char *pWiFiSsid, const char *pWiFiPassword)
+void WiFiHandler::AddWiFiCredentials(const char *kpWiFiSsid, const char *kpWiFiPassword)
 {
   xSemaphoreTake(m_mutex, portMAX_DELAY);
 
   bool isMax = true;
 
-  for (size_t i = 0; i < WIFI_MAX_CREDENTIALS; i++)
+  for (size_t i = 0; i < WIFI_CREDS_MAX; i++)
   {
     if (m_pWiFiSsids[i] == nullptr && m_pWiFiPasswords[i] == nullptr)
     {
-      m_pWiFiSsids[i] = (char *)malloc(sizeof(char) * 30);
-      m_pWiFiPasswords[i] = (char *)malloc(sizeof(char) * 30);
+      m_pWiFiSsids[i] = (char *)malloc(sizeof(char) * WIFI_CRED_MAX_CHAR);
+      m_pWiFiPasswords[i] = (char *)malloc(sizeof(char) * WIFI_CRED_MAX_CHAR);
 
-      memcpy(m_pWiFiSsids[i], pWiFiSsid, sizeof(char) * 30);
-      memcpy(m_pWiFiPasswords[i], pWiFiPassword, sizeof(char) * 30);
+      memcpy(m_pWiFiSsids[i], kpWiFiSsid, sizeof(char) * WIFI_CRED_MAX_CHAR);
+      memcpy(m_pWiFiPasswords[i], kpWiFiPassword, sizeof(char) * WIFI_CRED_MAX_CHAR);
 
       isMax = false;
 
@@ -59,11 +68,11 @@ void WiFiHandler::ConnectToWiFi()
 {
   xSemaphoreTake(m_mutex, portMAX_DELAY);
 
+  unsigned long startMillis = 0;
+  unsigned long currentMillis = 0;
   size_t index = 0;
   int16_t n = 0;
   int32_t maxRssi = 0;
-  unsigned long startMillis = 0;
-  unsigned long currentMillis = 0;
 
   if (WiFi.status() == WL_CONNECTED)
   {
@@ -92,7 +101,7 @@ void WiFiHandler::ConnectToWiFi()
     }
   }
 
-  for (size_t i = 0; i < WIFI_MAX_CREDENTIALS; i++)
+  for (size_t i = 0; i < WIFI_CREDS_MAX; i++)
   {
     if (strcmp(WiFi.SSID(index).c_str(), m_pWiFiSsids[i]) == 0)
     {
@@ -108,9 +117,7 @@ void WiFiHandler::ConnectToWiFi()
 
   while (WiFi.status() != WL_CONNECTED)
   {
-    delay(5000);
-
-    Serial.println(".");
+    WiFi.reconnect();
 
     currentMillis = millis();
 
@@ -119,7 +126,7 @@ void WiFiHandler::ConnectToWiFi()
       break;
     }
 
-    WiFi.reconnect();
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
   }
 
   if (WiFi.status() == WL_CONNECTED)
@@ -134,21 +141,20 @@ void WiFiHandler::ConnectToWiFi()
 
 void WiFiHandler::Task()
 {
-  m_pWiFiSsids = (char **)malloc(sizeof(char *) * 5);
-  m_pWiFiPasswords = (char **)malloc(sizeof(char *) * 5);
-
-  for (size_t i = 0; i < WIFI_MAX_CREDENTIALS; i++)
-  {
-    m_pWiFiSsids[i] = nullptr;
-    m_pWiFiPasswords[i] = nullptr;
-  }
+  WiFi.mode(WIFI_STA);
 
   AddWiFiCredentials("HTEronet-NMHA85", "45803511");
   AddWiFiCredentials("MYA-L41", "03b4a12d");
 
-  WiFi.mode(WIFI_STA);
-
   ConnectToWiFi();
+
+  while (true)
+  {
+    // Serial.print("WiFiHandler: ");
+    // Serial.println(uxTaskGetStackHighWaterMark(NULL));
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+  }
 }
 
 #endif

@@ -10,6 +10,10 @@
 #include "components/task_handler/public/task_handler.h"
 #include "components/utils/public/common.h"
 
+/**
+ * @class WiFiHandler
+ * @brief WiFiHandler class.
+ */
 class WiFiHandler : public TaskHandler
 {
 
@@ -17,11 +21,13 @@ public:
   /**
    * @brief Constructor.
    *
-   * @param[in] pName Pointer to the application name.
+   * @param[in] kpName Pointer to the application name.
    * @param[in] stackDepth Stack depth.
+   * @param[in] uxPriority Priority.
    * @param[in] pTaskHandler Pointer to the task handler.
+   * @param[in] xCoreID Core ID.
    */
-  WiFiHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler);
+  WiFiHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID);
 
   /**
    * @brief Destructor.
@@ -60,10 +66,10 @@ private:
    * @fn AddWiFiCredentials
    * @brief Adds WiFi credentials.
    *
-   * @param[in] pWiFiSsid Pointer to the WiFi SSID.
-   * @param[in] pWiFiPassword Pointer to the WiFi password.
+   * @param[in] kpWiFiSsid Pointer to the WiFi SSID.
+   * @param[in] kpWiFiPassword Pointer to the WiFi password.
    */
-  void AddWiFiCredentials(const char *pWiFiSsid, const char *pWiFiPassword);
+  void AddWiFiCredentials(const char *kpWiFiSsid, const char *kpWiFiPassword);
 
   /**
    * @fn ConnectToWiFi
