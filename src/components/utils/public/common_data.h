@@ -16,14 +16,21 @@
  ********************************/
 
 #define SERIAL_BAUD 9600
+#define CPU_FREQUENCY 160
+#define DEEP_SLEEP_COUNT 60000
 
-#define DEV_NAME "ESP32 Waste Bin"
+#define BLE_DEV_NAME "ESP32 Waste Bin"
+#define BLE_SERVICE_UUID "5f93f3f7-75ae-4b70-bb4a-e6859be4b105"
+#define BLE_CHARACTERISTIC_UUID "0e746bf8-fb7f-4d7e-9fda-b8911cf1d599"
 
-#define WIFI_MAX_CREDENTIALS 5
+#define WIFI_CREDS_MAX 5
+#define WIFI_CRED_MAX_CHAR 30
 #define WIFI_WAIT_CONNECTION_MS 15000
 
-#define SERVICE_UUID "5f93f3f7-75ae-4b70-bb4a-e6859be4b105"
-#define CHARACTERISTIC_UUID "0e746bf8-fb7f-4d7e-9fda-b8911cf1d599"
+#define MQTT_CLIENT_ID "esp32dev"
+#define MQTT_TOPICS_MAX 5
+#define MQTT_TOPIC_MAX_CHAR 30
+#define MQTT_KEEP_ALIVE 30
 
 #define OBJ_REG_REQ_PKG 0x01
 #define OBJ_REG_REQ_PKG_V 0x01
@@ -62,6 +69,8 @@ public:
    */
   enum AlertMessageEnum : uint8_t
   {
+    eAlertMsgBleClientConnected,
+    eAlertMsgBleClientDisconnected,
     eAlertMsgWiFiConnecting,
     eAlertMsgWiFiConnected,
     eAlertMsgWiFiSsidFound,
@@ -69,7 +78,11 @@ public:
     eAlertMsgWiFiNoNetworksFound,
     eAlertMsgWiFiMaxCredentialsReached,
     eAlertMsgMqttConnected,
-    eAlertMsgMqttConnectionFailed
+    eAlertMsgMqttConnectionFailed,
+    eAlertMsgMqttMaxTopicsReached,
+    eAlertMsgDhtReadFail,
+    eAlertMsgMutexNotCreated,
+    eAlertMsgDeepSleep
   };
 
   /********************************

@@ -2,8 +2,8 @@
 
 #ifdef TARGET_ESP32DEV
 
-WasteBin::WasteBin(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler, BleHandler *pBleHandler, WiFiHandler *pWiFiHandler, MqttHandler *pMqttHandler, const uint8_t kBuzzerPin, const uint8_t kLedPin, const uint8_t kPirPin, const uint8_t kTempHumiSensPin, const uint8_t kUltrasonicSensEchoPin, const uint8_t kUltrasonicSensTrigPin)
-    : TaskHandler(pName, stackDepth, pTaskHandler),
+WasteBin::WasteBin(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, BleHandler *pBleHandler, WiFiHandler *pWiFiHandler, MqttHandler *pMqttHandler, const uint8_t kBuzzerPin, const uint8_t kLedPin, const uint8_t kPirPin, const uint8_t kTempHumiSensPin, const uint8_t kUltrasonicSensEchoPin, const uint8_t kUltrasonicSensTrigPin)
+    : TaskHandler(kpName, stackDepth, uxPriority, pTaskHandler, xCoreID),
       m_pBleHandler(pBleHandler),
       m_pWiFiHandler(pWiFiHandler),
       m_pMqttHandler(pMqttHandler),
@@ -18,25 +18,21 @@ WasteBin::WasteBin(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHa
 
   if (m_mutex == NULL)
   {
-    Serial.println("Mutex can not be created.");
+    Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMutexNotCreated));
   }
+
+  m_pDht = new DHT(kTempHumiSensPin, DHT11);
+  m_pRtc = new ESP32Time();
 
   m_startTime = millis();
   m_currentTime = millis();
   m_pirPinState = LOW;
   m_pirPinStatePrev = m_pirPinState;
-
-  m_pDht = new DHT(m_tempHumiSensPin, DHT11);
-  m_pRtc = new ESP32Time();
-
-  m_pDht->begin();
 }
 
 void WasteBin::SendRecord(const String kData) const
 {
   xSemaphoreTake(m_mutex, portMAX_DELAY);
-
-  Serial.println("Sending record to the MQTT topic.");
 
   Common::ObjectRecordBasePackage *pObjectRecordBasePackage =
       (Common::ObjectRecordBasePackage *)malloc(sizeof(Common::ObjectRecordBasePackage));
@@ -84,39 +80,18 @@ void WasteBin::SendRecord(const String kData) const
 
   pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, sizeof(pBytesPackage->length) - 1);
 
-  String s = String("");
-
-  s.clear();
-
-  for (size_t i = 0; i < pBytesPackage->length; i++)
-  {
-    s.concat(((int)pBytesPackage->pBytes[i]));
-
-    if (i < pBytesPackage->length - 1)
-    {
-      s.concat("-");
-    }
-  }
-
-  Serial.println(s);
-
-  char c[150];
-
-  Serial.println(s.length());
-
-  memcpy(c, s.c_str(), s.length());
-
-  if (!m_pMqttHandler->GetMqttClientObject()->publish("topic", c))
-  {
-    Serial.println("Not send!");
-  }
+  m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[0], (char *)pBytesPackage->pBytes, pBytesPackage->length);
 
   xSemaphoreGive(m_mutex);
 }
 
 void WasteBin::Task()
 {
+  m_pDht->begin();
+
   m_pBleHandler->AddCallback("wb.sendrecord", bind(&WasteBin::SendRecord, this, std::placeholders::_1));
+
+  vTaskDelay(1000 / portTICK_PERIOD_MS);
 
   while (true)
   {
@@ -129,40 +104,40 @@ void WasteBin::Task()
     m_duration = pulseIn(m_ultrasonicSensEchoPin, HIGH);
     m_cm = m_duration / 29 / 2;
 
-    Serial.print("cm: ");
-    Serial.println(m_cm);
-
-    delay(100);
+    // Serial.println(m_cm);
 
     m_humidity = m_pDht->readHumidity();
     m_temperatureCelsius = m_pDht->readTemperature();
 
     if (isnan(m_humidity) || isnan(m_temperatureCelsius))
     {
-      Serial.println("Failed to read from DHT sensor!");
+      Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgDhtReadFail));
     }
 
-    Serial.print("Humidity: ");
-    Serial.println(m_humidity);
-    Serial.print("Temperature: ");
-    Serial.println(m_temperatureCelsius);
-
-    delay(100);
+    // Serial.println(m_humidity);
+    // Serial.println(m_temperatureCelsius);
 
     m_currentTime = millis();
 
-    if (!m_pBleHandler->GetIsDeviceConnected() && m_currentTime - m_startTime >= 30000)
+    if (!m_pBleHandler->GetIsDeviceConnected() && m_currentTime - m_startTime >= DEEP_SLEEP_COUNT)
     {
-      Serial.println("Going to deep sleep.");
+      Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgDeepSleep));
+
+      m_pMqttHandler->GetMqttClientObject()->disconnect();
 
       m_pWiFiHandler->GetWiFiClassObject()->disconnect();
       m_pWiFiHandler->GetWiFiClassObject()->setSleep(WIFI_PS_MAX_MODEM);
+
+      vTaskDelay(2000 / portTICK_PERIOD_MS);
 
       esp_sleep_enable_ext0_wakeup(GPIO_NUM_4, HIGH);
       esp_deep_sleep_start();
     }
 
-    delay(1000);
+    // Serial.print("WasteBin: ");
+    // Serial.println(uxTaskGetStackHighWaterMark(NULL));
+
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
   }
 }
 

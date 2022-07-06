@@ -2,16 +2,16 @@
 
 #ifdef TARGET_ESP32DEV
 
-TaskHandler::TaskHandler(const char *pName, uint32_t stackDepth, TaskHandle_t *pTaskHandler)
+TaskHandler::TaskHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID)
     : m_pTaskHandler(pTaskHandler)
 {
-  xTaskCreate(this->StartTask, pName, stackDepth, this, 1, pTaskHandler);
+  xTaskCreatePinnedToCore(this->StartTask, kpName, stackDepth, this, uxPriority, pTaskHandler, xCoreID);
 }
 
 void TaskHandler::StartTask(void *_this)
 {
   ((TaskHandler *)_this)->Task();
-  vTaskSuspend(*((TaskHandler *)_this)->m_pTaskHandler);
+  vTaskDelete(*((TaskHandler *)_this)->m_pTaskHandler);
 }
 
 #endif

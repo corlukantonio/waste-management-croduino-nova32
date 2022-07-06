@@ -13,7 +13,9 @@ Common *Common::ms_pCommon{nullptr};
 Common *Common::GetInstance()
 {
   if (ms_pCommon == nullptr)
+  {
     ms_pCommon = new Common();
+  }
 
   return ms_pCommon;
 }
@@ -26,93 +28,82 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
   va_list args;
   va_start(args, n);
 
-  char *message = (char *)malloc(sizeof(char) * 50);
+  char *message = (char *)malloc(sizeof(char) * 100);
 
   switch (alertMessage)
   {
+  case eAlertMsgBleClientConnected:
+    s = String("Connected.");
+    break;
+
+  case eAlertMsgBleClientDisconnected:
+    s = String("Disconnected.");
+    break;
+
   case eAlertMsgWiFiConnecting:
     s = String("Connecting with \"");
-
-    for (size_t i = 0; i < n; i++)
-      s.concat(va_arg(args, char *));
-
-    s.concat("\" WiFi network.");
-
+    s.concat(va_arg(args, char *));
+    s.concat("\" WiFi network...");
     break;
 
   case eAlertMsgWiFiConnected:
     s = String("Connected to the \"");
-
-    for (size_t i = 0; i < n; i++)
-      s.concat(va_arg(args, char *));
-
+    s.concat(va_arg(args, char *));
     s.concat("\" WiFi network.");
-
     break;
 
   case eAlertMsgWiFiSsidFound:
     s = String("");
-
-    for (size_t i = 0; i < n; i++)
-    {
-      if (i == 0)
-      {
-        s.concat(va_arg(args, size_t) + 1);
-        s.concat(": ");
-      }
-      else if (i == 1)
-      {
-        s.concat(va_arg(args, char *));
-        s.concat(" (");
-      }
-      else if (i == 2)
-      {
-        s.concat(va_arg(args, int32_t));
-        s.concat(")");
-      }
-    }
-
+    s.concat(va_arg(args, size_t) + 1);
+    s.concat(": ");
+    s.concat(va_arg(args, char *));
+    s.concat(" (");
+    s.concat(va_arg(args, int32_t));
+    s.concat(")");
     break;
 
   case eAlertMsgWiFiNetworksFound:
     s = String("");
-
-    for (size_t i = 0; i < n; i++)
-      s.concat(va_arg(args, size_t));
-
-    if (n == 1)
-      s.concat(" network found.");
-    else
-      s.concat(" networks found.");
-
+    s.concat(va_arg(args, size_t));
+    s.concat(n == 1 ? " network found." : " networks found.");
     break;
 
   case eAlertMsgWiFiNoNetworksFound:
     s = String("No networks found.");
-
     break;
 
   case eAlertMsgWiFiMaxCredentialsReached:
     s = String("The maximum number of WiFi credentials has been reached.");
-
     break;
 
   case eAlertMsgMqttConnected:
     s = String("Connected to the ");
-    for (size_t i = 0; i < n; i++)
-      s.concat(va_arg(args, char *));
+    s.concat(va_arg(args, char *));
     s.concat(" MQTT broker.");
-
     break;
 
   case eAlertMsgMqttConnectionFailed:
-    s = String("MQTT connection failed!");
+    s = String("MQTT connection failed.");
+    break;
 
+  case eAlertMsgMqttMaxTopicsReached:
+    s = String("The maximum number of MQTT topics has been reached.");
+    break;
+
+  case eAlertMsgDhtReadFail:
+    s = String("Failed to read from DHT sensor.");
+    break;
+
+  case eAlertMsgMutexNotCreated:
+    s = String("Mutex can not be created.");
+    break;
+
+  case eAlertMsgDeepSleep:
+    s = String("Going to deep sleep.");
     break;
 
   default:
     s = String("Undefined!");
-
     break;
   }
 
@@ -129,7 +120,9 @@ const uint8_t Common::GetCrc(const uint8_t *kpData, const size_t kSize) const
   uint8_t crc = 0x00;
 
   for (size_t i = 0; i < kSize; i++)
+  {
     crc += (i * kpData[i]);
+  }
 
   return crc;
 }
@@ -144,7 +137,9 @@ void Common::InsertArgToByteArray(size_t &rCounter, uint8_t *pBytes, TArg arg, T
   uint8_t *pArgInBytes = reinterpret_cast<uint8_t *>(arg);
 
   for (size_t i = 0; i < sizeof(*arg); i++, rCounter++)
+  {
     pBytes[rCounter] = pArgInBytes[i];
+  }
 
   InsertArgToByteArray(rCounter, pBytes, args...);
 }

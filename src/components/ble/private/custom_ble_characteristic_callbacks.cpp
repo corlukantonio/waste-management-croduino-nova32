@@ -1,4 +1,4 @@
-#include "components/utils/public/custom_ble_characteristic_callbacks.h"
+#include "components/ble/public/custom_ble_characteristic_callbacks.h"
 
 #ifdef TARGET_ESP32DEV
 

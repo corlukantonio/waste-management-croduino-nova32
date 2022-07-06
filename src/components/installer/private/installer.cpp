@@ -7,7 +7,9 @@ Installer *Installer::ms_pInstaller{nullptr};
 Installer *Installer::GetInstance()
 {
     if (ms_pInstaller == nullptr)
+    {
         ms_pInstaller = new Installer();
+    }
 
     return ms_pInstaller;
 }
@@ -26,27 +28,33 @@ void Installer::InitPins(const String kData)
     pinMode(m_pirPin, INPUT);
     pinMode(m_ultrasonicSensEchoPin, INPUT);
     pinMode(m_ultrasonicSensTrigPin, OUTPUT);
-
-    Serial.println("Init pins.");
 }
 
 void Installer::Setup()
 {
     Serial.begin(SERIAL_BAUD);
 
-    InitPins("");
+    setCpuFrequencyMhz(CPU_FREQUENCY);
+
+    Serial.print("\nBaud rate: ");
+    Serial.println(Serial.baudRate());
+    Serial.print("CPU frequency: ");
+    Serial.print(getCpuFrequencyMhz());
+    Serial.println(" MHz");
+
+    InitPins();
 
     TaskHandle_t taskBleHandler;
     TaskHandle_t taskWiFiHandler;
     TaskHandle_t taskMqttHandler;
     TaskHandle_t taskWasteBin;
 
-    BleHandler *pBleHandler = new BleHandler("BleHandler", 4096, &taskBleHandler);
-    WiFiHandler *pWiFiHandler = new WiFiHandler("WiFiHandler", 2048, &taskWiFiHandler);
-    MqttHandler *pMqttHandler = new MqttHandler("MqttHandler", 2048, &taskMqttHandler, pWiFiHandler);
-    WasteBin *pWasteBin = new WasteBin("WasteBin", 2048, &taskWasteBin, pBleHandler, pWiFiHandler, pMqttHandler, m_buzzerPin, m_ledPin, m_pirPin, m_tempHumiSensPin, m_ultrasonicSensEchoPin, m_ultrasonicSensTrigPin);
+    BleHandler *pBleHandler = new BleHandler("BleHandler", 2048, tskIDLE_PRIORITY, &taskBleHandler, 0);
+    WiFiHandler *pWiFiHandler = new WiFiHandler("WiFiHandler", 2048, tskIDLE_PRIORITY, &taskWiFiHandler, 0);
+    MqttHandler *pMqttHandler = new MqttHandler("MqttHandler", 3072, (BaseType_t)1U, &taskMqttHandler, 0, pWiFiHandler);
+    WasteBin *pWasteBin = new WasteBin("WasteBin", 2048, (BaseType_t)1U, &taskWasteBin, 1, pBleHandler, pWiFiHandler, pMqttHandler, m_buzzerPin, m_ledPin, m_pirPin, m_tempHumiSensPin, m_ultrasonicSensEchoPin, m_ultrasonicSensTrigPin);
 
-    pBleHandler->AddCallback("installer.initpins", std::bind(&Installer::InitPins, this, std::placeholders::_1));
+    pBleHandler->AddCallback("installer.initpins", bind(&Installer::InitPins, this, std::placeholders::_1));
 
     while (true)
     {
