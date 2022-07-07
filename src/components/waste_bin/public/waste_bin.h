@@ -60,12 +60,44 @@ protected:
 
 private:
   /**
+   * @fn SendObjectRegistrationRequest
+   * @brief Send object registration request.
+   *
+   * @param kData Data.
+   */
+  void SendObjectRegistrationRequest(const String kData = "") const;
+
+  /**
+   * @fn SendObjectActivationRequest
+   * @brief Send object activation request
+   *
+   * @param kData Data.
+   */
+  void SendObjectActivationRequest(const String kData = "") const;
+
+  /**
+   * @fn SendObjectRecordConfigRequest
+   * @brief Send object record config request.
+   *
+   * @param kData Data.
+   */
+  void SendObjectRecordConfigRequest(const String kData = "") const;
+
+  /**
+   * @fn SendObjectRecordConfigApprovalRequest
+   * @brief Send object record config approval request.
+   *
+   * @param kData Data.
+   */
+  void SendObjectRecordConfigApprovalRequest(const String kData = "") const;
+
+  /**
    * @fn SendRecord
    * @brief Sends data to the MQTT topic.
    *
    * @param kData Data.
    */
-  void SendRecord(const String kData) const;
+  void SendRecord(const String kData = "") const;
 
   /********************************
    *                              *
@@ -93,6 +125,7 @@ private:
   uint8_t m_tempHumiSensPin;               //!< Temperature and humidity sensor pin.
   uint8_t m_ultrasonicSensEchoPin;         //!< Ultrasonic sensor echo pin.
   uint8_t m_ultrasonicSensTrigPin;         //!< Ultrasonic sensor trig pin.
+  bool m_isRecordPackageSent;              //!< Is record package sent.
 };
 
 #endif

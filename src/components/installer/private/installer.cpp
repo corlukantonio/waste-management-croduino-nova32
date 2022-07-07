@@ -2,6 +2,8 @@
 
 #ifdef TARGET_ESP32DEV
 
+RTC_DATA_ATTR int bootCount = 0; //!< Boot count.
+
 Installer *Installer::ms_pInstaller{nullptr};
 
 Installer *Installer::GetInstance()
@@ -12,6 +14,30 @@ Installer *Installer::GetInstance()
     }
 
     return ms_pInstaller;
+}
+
+void Installer::PrintWakeUpReason() const
+{
+    esp_sleep_wakeup_cause_t wakeUpReason;
+
+    wakeUpReason = esp_sleep_get_wakeup_cause();
+
+    Serial.println("");
+
+    switch (wakeUpReason)
+    {
+    case ESP_SLEEP_WAKEUP_EXT0:
+        Serial.println("\nWakeup caused by external signal using RTC_IO.");
+        break;
+
+    case ESP_SLEEP_WAKEUP_TIMER:
+        Serial.println("\nWakeup caused by timer.");
+        break;
+
+    default:
+        Serial.printf("\nWakeup was not caused by deep sleep: %d\n", wakeUpReason);
+        break;
+    }
 }
 
 void Installer::InitPins(const String kData)
@@ -33,6 +59,13 @@ void Installer::InitPins(const String kData)
 void Installer::Setup()
 {
     Serial.begin(SERIAL_BAUD);
+
+    delay(1000);
+
+    PrintWakeUpReason();
+
+    ++bootCount;
+    Serial.println("Boot number: " + String(bootCount));
 
     setCpuFrequencyMhz(CPU_FREQUENCY);
 

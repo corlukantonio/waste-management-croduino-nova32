@@ -18,6 +18,7 @@
 #define SERIAL_BAUD 9600
 #define CPU_FREQUENCY 160
 #define DEEP_SLEEP_COUNT 60000
+#define uS_TO_S_FACTOR 1000000
 
 #define BLE_DEV_NAME "ESP32 Waste Bin"
 #define BLE_SERVICE_UUID "5f93f3f7-75ae-4b70-bb4a-e6859be4b105"
