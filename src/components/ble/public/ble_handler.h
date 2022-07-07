@@ -14,6 +14,7 @@
 
 #include "components/ble/public/custom_ble_characteristic_callbacks.h"
 #include "components/ble/public/custom_ble_server_callbacks.h"
+#include "components/pwm_handler/public/pwm_handler.h"
 #include "components/task_handler/public/task_handler.h"
 #include "components/utils/public/common.h"
 
@@ -51,8 +52,10 @@ public:
    * @param[in] uxPriority Priority.
    * @param[in] pTaskHandler Pointer to the task handler.
    * @param[in] xCoreID Core ID.
+   * @param[in] pPwmHandler PWM handler.
+   * @param[in] kBuzzerPin Buzzer pin.
    */
-  BleHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID);
+  BleHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, PwmHandler *pPwmHandle, const uint8_t kBuzzerPin);
 
   /**
    * @brief Destructor.
@@ -97,6 +100,7 @@ private:
    ********************************/
 
   SemaphoreHandle_t m_mutex;                                             //!< Mutex.
+  PwmHandler *m_pPwmHandler;                                             //!< PWM handler.
   CustomBLECharacteristicCallbacks *m_pCustomBLECharacteristicCallbacks; //!< Custom BLE characteristic callbacks.
   CustomBLEServerCallbacks *m_pCustomBLEServerCallbacks;                 //!< Custom BLE server callbacks.
   BLEAdvertising *m_pBleAdvertising;                                     //!< BLE advertising.
@@ -105,6 +109,7 @@ private:
   BLEService *m_pBleService;                                             //!< BLE service.
   std::vector<BleCallback> m_vBleCallbacks;                              //!< BLE callbacks.
   std::queue<String> m_qBleCallbacks;                                    //!< BLE callbacks queue.
+  uint8_t m_buzzerPin;                                                   //!< Buzzer pin.
 };
 
 #endif

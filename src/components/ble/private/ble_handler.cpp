@@ -2,8 +2,10 @@
 
 #ifdef TARGET_ESP32DEV
 
-BleHandler::BleHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID)
-    : TaskHandler(kpName, stackDepth, uxPriority, pTaskHandler, xCoreID)
+BleHandler::BleHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, PwmHandler *pPwmHandler, const uint8_t kBuzzerPin)
+    : TaskHandler(kpName, stackDepth, uxPriority, pTaskHandler, xCoreID),
+      m_pPwmHandler(pPwmHandler),
+      m_buzzerPin(kBuzzerPin)
 {
   m_mutex = xSemaphoreCreateMutex();
 
@@ -13,7 +15,7 @@ BleHandler::BleHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPr
   }
 
   m_pCustomBLECharacteristicCallbacks = new CustomBLECharacteristicCallbacks(&m_qBleCallbacks);
-  m_pCustomBLEServerCallbacks = new CustomBLEServerCallbacks();
+  m_pCustomBLEServerCallbacks = new CustomBLEServerCallbacks(pPwmHandler, kBuzzerPin);
 
   BLEDevice::init(BLE_DEV_NAME);
   m_pBleServer = BLEDevice::createServer();
@@ -65,8 +67,10 @@ void BleHandler::Task()
       m_qBleCallbacks.pop();
     }
 
-    // Serial.print("BleHandler: ");
-    // Serial.println(uxTaskGetStackHighWaterMark(NULL));
+#if LOG_STACK == 1
+    Serial.print("BleHandler: ");
+    Serial.println(uxTaskGetStackHighWaterMark(NULL));
+#endif
 
     vTaskDelay(2000 / portTICK_PERIOD_MS);
   }

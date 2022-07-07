@@ -44,12 +44,14 @@ void Installer::Setup()
 
     InitPins();
 
+    TaskHandle_t taskPwmHandler;
     TaskHandle_t taskBleHandler;
     TaskHandle_t taskWiFiHandler;
     TaskHandle_t taskMqttHandler;
     TaskHandle_t taskWasteBin;
 
-    BleHandler *pBleHandler = new BleHandler("BleHandler", 2048, tskIDLE_PRIORITY, &taskBleHandler, 0);
+    PwmHandler *pPwmHandler = new PwmHandler("PwmHandler", 2048, (BaseType_t)2U, &taskPwmHandler, 0);
+    BleHandler *pBleHandler = new BleHandler("BleHandler", 2048, tskIDLE_PRIORITY, &taskBleHandler, 0, pPwmHandler, m_buzzerPin);
     WiFiHandler *pWiFiHandler = new WiFiHandler("WiFiHandler", 2048, tskIDLE_PRIORITY, &taskWiFiHandler, 0);
     MqttHandler *pMqttHandler = new MqttHandler("MqttHandler", 3072, (BaseType_t)1U, &taskMqttHandler, 0, pWiFiHandler);
     WasteBin *pWasteBin = new WasteBin("WasteBin", 2048, (BaseType_t)1U, &taskWasteBin, 1, pBleHandler, pWiFiHandler, pMqttHandler, m_buzzerPin, m_ledPin, m_pirPin, m_tempHumiSensPin, m_ultrasonicSensEchoPin, m_ultrasonicSensTrigPin);

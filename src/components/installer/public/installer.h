@@ -7,6 +7,7 @@
 
 #include "components/ble/public/ble_handler.h"
 #include "components/mqtt_handler/public/mqtt_handler.h"
+#include "components/pwm_handler/public/pwm_handler.h"
 #include "components/utils/public/common.h"
 #include "components/waste_bin/public/waste_bin.h"
 #include "components/wifi_handler/public/wifi_handler.h"

@@ -6,6 +6,7 @@
 #include <Arduino.h>
 #include <BLEServer.h>
 
+#include "components/pwm_handler/public/pwm_handler.h"
 #include "components/utils/public/common.h"
 
 /**
@@ -16,6 +17,14 @@ class CustomBLEServerCallbacks : public BLEServerCallbacks
 {
 
 public:
+  /**
+   * @brief Constructor.
+   *
+   * @param[in] pPwmHandler PWM handler.
+   * @param[in] kBuzzerPin Buzzer pin.
+   */
+  CustomBLEServerCallbacks(PwmHandler *pPwmHandler, const uint8_t kBuzzerPin);
+
   /********************************
    *                              *
    * Methods.                     *
@@ -45,7 +54,9 @@ private:
    *                              *
    ********************************/
 
-  bool m_isDeviceConnected; //!< Is device connected.
+  PwmHandler *m_pPwmHandler; //!< PWM handler.
+  uint8_t m_buzzerPin;       //!< Buzzer pin.
+  bool m_isDeviceConnected;  //!< Is device connected.
 };
 
 #endif
