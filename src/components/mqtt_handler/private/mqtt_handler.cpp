@@ -101,8 +101,10 @@ void MqttHandler::Task()
 
   while (true)
   {
-    // Serial.print("MqttHandler: ");
-    // Serial.println(uxTaskGetStackHighWaterMark(NULL));
+#if LOG_STACK == 1
+    Serial.print("MqttHandler: ");
+    Serial.println(uxTaskGetStackHighWaterMark(NULL));
+#endif
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
   }

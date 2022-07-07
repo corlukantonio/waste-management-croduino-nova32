@@ -134,8 +134,10 @@ void WasteBin::Task()
       esp_deep_sleep_start();
     }
 
-    // Serial.print("WasteBin: ");
-    // Serial.println(uxTaskGetStackHighWaterMark(NULL));
+#if LOG_STACK == 1
+    Serial.print("WasteBin: ");
+    Serial.println(uxTaskGetStackHighWaterMark(NULL));
+#endif
 
     vTaskDelay(2000 / portTICK_PERIOD_MS);
   }

@@ -150,8 +150,11 @@ void WiFiHandler::Task()
 
   while (true)
   {
-    // Serial.print("WiFiHandler: ");
-    // Serial.println(uxTaskGetStackHighWaterMark(NULL));
+
+#if LOG_STACK == 1
+    Serial.print("WiFiHandler: ");
+    Serial.println(uxTaskGetStackHighWaterMark(NULL));
+#endif
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
   }
