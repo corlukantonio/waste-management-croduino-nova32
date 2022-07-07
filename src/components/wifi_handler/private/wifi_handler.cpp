@@ -150,7 +150,6 @@ void WiFiHandler::Task()
 
   while (true)
   {
-
 #if LOG_STACK == 1
     Serial.print("WiFiHandler: ");
     Serial.println(uxTaskGetStackHighWaterMark(NULL));

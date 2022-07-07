@@ -69,7 +69,11 @@ void MqttHandler::AddMqttTopic(const char *kpMqttTopic)
 
 void MqttHandler::Task()
 {
-  AddMqttTopic("iot/wastemanagement/record");
+  AddMqttTopic("iot/wm/devreg");
+  AddMqttTopic("iot/wm/devact");
+  AddMqttTopic("iot/wm/reccfg");
+  AddMqttTopic("iot/wm/recapp");
+  AddMqttTopic("iot/wm/record");
 
   while (true)
   {

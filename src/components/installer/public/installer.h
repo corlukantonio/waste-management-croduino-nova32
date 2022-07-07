@@ -74,6 +74,11 @@ protected:
 
 private:
   /**
+   * @brief Print wake up reason.
+   */
+  void PrintWakeUpReason() const;
+
+  /**
    * @fn InitPins
    * @brief Initializes pins.
    *
