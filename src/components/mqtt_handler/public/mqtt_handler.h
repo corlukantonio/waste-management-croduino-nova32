@@ -4,6 +4,7 @@
 #ifdef TARGET_ESP32DEV
 
 #include <Arduino.h>
+#include <EEPROM.h>
 #include <freertos/semphr.h>
 #include <MQTT.h>
 #include <WiFi.h>
@@ -81,15 +82,14 @@ private:
    *                              *
    ********************************/
 
-  SemaphoreHandle_t m_mutex;   //!< Mutex.
-  MQTTClient *m_pMqttClient;   //!< MQTT client.
-  WiFiClient *m_pWiFiClient;   //!< WiFi client.
-  WiFiHandler *m_pWiFiHandler; //!< WiFi handler.
-  const char *m_pMqttServer;   //!< MQTT server.
-  int32_t m_pMqttPort;         //!< MQTT port.
-  const char *m_pMqttUser;     //!< MQTT user.
-  const char *m_pMqttPassword; //!< MQTT password.
-  char **m_pMqttTopics;        //!< MQTT topics.
+  SemaphoreHandle_t m_mutex;                   //!< Mutex.
+  MQTTClient *m_pMqttClient;                   //!< MQTT client.
+  WiFiClient *m_pWiFiClient;                   //!< WiFi client.
+  WiFiHandler *m_pWiFiHandler;                 //!< WiFi handler.
+  Common::MqttCredentials *m_pMqttCredentials; //!< MQTT credentials.
+  const Common::BytesPackage *m_pBytesPackage; //!< Bytes package.
+  Common::BytesPackage *m_pBytesPackageRead;   //!< Bytes package read.
+  char **m_pMqttTopics;                        //!< MQTT topics.
 };
 
 #endif

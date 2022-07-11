@@ -73,6 +73,8 @@ void WiFiHandler::ConnectToWiFi()
   size_t index = 0;
   int16_t n = 0;
   int32_t maxRssi = 0;
+  bool isSsidInCreds = false;
+  bool isSsidFound = false;
 
   if (WiFi.status() == WL_CONNECTED)
   {
@@ -93,40 +95,56 @@ void WiFiHandler::ConnectToWiFi()
     {
       Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgWiFiSsidFound, 3, i, WiFi.SSID(i).c_str(), WiFi.RSSI(i)));
 
+      isSsidInCreds = false;
+
       if (maxRssi < WiFi.RSSI(i) || maxRssi == 0)
       {
-        index = i;
-        maxRssi = WiFi.RSSI(i);
+        for (size_t j = 0; j < WIFI_CREDS_MAX && m_pWiFiSsids[j] != nullptr; j++)
+        {
+          if (strcmp(WiFi.SSID(i).c_str(), m_pWiFiSsids[j]) == 0)
+          {
+            index = i;
+            maxRssi = WiFi.RSSI(i);
+
+            isSsidInCreds = true;
+            isSsidFound = true;
+
+            break;
+          }
+        }
       }
     }
   }
 
-  for (size_t i = 0; i < WIFI_CREDS_MAX; i++)
+  if (isSsidFound)
   {
-    if (strcmp(WiFi.SSID(index).c_str(), m_pWiFiSsids[i]) == 0)
+    for (size_t i = 0; i < WIFI_CREDS_MAX; i++)
     {
-      WiFi.begin(m_pWiFiSsids[i], m_pWiFiPasswords[i]);
+      if (strcmp(WiFi.SSID(index).c_str(), m_pWiFiSsids[i]) == 0)
+      {
+        WiFi.begin(m_pWiFiSsids[i], m_pWiFiPasswords[i]);
 
-      Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgWiFiConnecting, 1, m_pWiFiSsids[i]));
+        Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgWiFiConnecting, 1, m_pWiFiSsids[i]));
 
-      break;
-    }
-  }
-
-  startMillis = millis();
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    WiFi.reconnect();
-
-    currentMillis = millis();
-
-    if (currentMillis - startMillis >= WIFI_WAIT_CONNECTION_MS)
-    {
-      break;
+        break;
+      }
     }
 
-    vTaskDelay(2000 / portTICK_PERIOD_MS);
+    startMillis = millis();
+
+    while (WiFi.status() != WL_CONNECTED)
+    {
+      WiFi.reconnect();
+
+      currentMillis = millis();
+
+      if (currentMillis - startMillis >= WIFI_WAIT_CONNECTION_MS)
+      {
+        break;
+      }
+
+      vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }
   }
 
   if (WiFi.status() == WL_CONNECTED)
@@ -145,6 +163,8 @@ void WiFiHandler::Task()
 
   AddWiFiCredentials("HTEronet-NMHA85", "45803511");
   AddWiFiCredentials("MYA-L41", "03b4a12d");
+  AddWiFiCredentials("Xiaomi_0F29", "ocibojekestena");
+  AddWiFiCredentials("Antonio (S10)", "fvfu0757");
 
   ConnectToWiFi();
 

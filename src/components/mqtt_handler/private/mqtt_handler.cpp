@@ -17,10 +17,45 @@ MqttHandler::MqttHandler(const char *kpName, uint32_t stackDepth, UBaseType_t ux
   m_pMqttClient->setKeepAlive(MQTT_KEEP_ALIVE);
   m_pWiFiClient = new WiFiClient();
 
-  m_pMqttServer = "driver.cloudmqtt.com";
-  m_pMqttPort = 18850;
-  m_pMqttUser = "gdnuxjsy";
-  m_pMqttPassword = "dc5a1o4kQlmi";
+  if (EEPROM.readByte(4) != 0xFF)
+  {
+    Serial.println("Writing MQTT credentials to EEPROM.");
+
+    m_pMqttCredentials = (Common::MqttCredentials *)malloc(sizeof(Common::MqttCredentials));
+
+    m_pMqttCredentials->flag = 0xFF;
+    strcpy(m_pMqttCredentials->server, "driver.cloudmqtt.com");
+    m_pMqttCredentials->port = 18850;
+    strcpy(m_pMqttCredentials->user, "oxiztsaz");
+    strcpy(m_pMqttCredentials->password, "fYBafc9Fy6pZ");
+
+    m_pBytesPackage = Common::GetInstance()->GetPackageWithArgsInBytes<Common::MqttCredentials>(&m_pMqttCredentials);
+
+    EEPROM.writeInt(0, m_pBytesPackage->length);
+    EEPROM.writeBytes(4, m_pBytesPackage->pBytes, m_pBytesPackage->length);
+    EEPROM.commit();
+  }
+  else
+  {
+    Serial.println("Reading MQTT credentials from EEPROM.");
+
+    m_pBytesPackageRead = (Common::BytesPackage *)malloc(sizeof(Common::BytesPackage));
+    EEPROM.get(0, m_pBytesPackageRead->length);
+    m_pBytesPackageRead->pBytes = (uint8_t *)malloc(m_pBytesPackageRead->length);
+    EEPROM.readBytes(4, m_pBytesPackageRead->pBytes, m_pBytesPackageRead->length);
+
+    m_pMqttCredentials = Common::GetInstance()->GetStructFromBytes<Common::MqttCredentials>(m_pBytesPackageRead->pBytes);
+  }
+
+  EEPROM.end();
+
+  Serial.print("MQTT server: ");
+  Serial.println(m_pMqttCredentials->server);
+  Serial.print("MQTT port: ");
+  Serial.println(m_pMqttCredentials->port);
+  Serial.print("MQTT user: ");
+  Serial.println(m_pMqttCredentials->user);
+
   m_pMqttTopics = (char **)malloc(sizeof(char *) * MQTT_TOPICS_MAX);
 
   for (size_t i = 0; i < MQTT_TOPICS_MAX; i++)
@@ -81,16 +116,16 @@ void MqttHandler::Task()
     {
       try
       {
-        m_pMqttClient->begin(m_pMqttServer, m_pMqttPort, *m_pWiFiClient);
+        m_pMqttClient->begin(m_pMqttCredentials->server, m_pMqttCredentials->port, *m_pWiFiClient);
 
-        if (!m_pMqttClient->connect(MQTT_CLIENT_ID, m_pMqttUser, m_pMqttPassword))
+        if (!m_pMqttClient->connect(MQTT_CLIENT_ID, m_pMqttCredentials->user, m_pMqttCredentials->password))
         {
           Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnectionFailed));
         }
 
         if (m_pMqttClient->connected())
         {
-          Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnected, 1, m_pMqttServer));
+          Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnected, 1, m_pMqttCredentials->server));
         }
       }
       catch (const std::exception &e)
