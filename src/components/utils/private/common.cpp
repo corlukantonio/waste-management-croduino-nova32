@@ -166,7 +166,8 @@ const Common::BytesPackage *Common::GetPackageWithArgsInBytes(TPackage **pBasePa
   uint8_t *pBasePackageInBytes = reinterpret_cast<uint8_t *>(*pBasePackage);
   uint8_t *pPackage;
 
-  if (std::is_same<TPackage, ObjectRegistrationRequestPackage>::value ||
+  if (std::is_same<TPackage, MqttCredentials>::value ||
+      std::is_same<TPackage, ObjectRegistrationRequestPackage>::value ||
       std::is_same<TPackage, ObjectActivationRequestPackage>::value ||
       std::is_same<TPackage, ObjectRecordConfigRequestPackage>::value ||
       std::is_same<TPackage, ObjectRecordConfigApprovalRequestPackage>::value)
@@ -204,6 +205,10 @@ const Common::BytesPackage *Common::GetPackageWithArgsInBytes(TPackage **pBasePa
 }
 
 // Explicit instantiations for `GetPackageWithArgsInBytes` method.
+
+template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
+    Common::MqttCredentials>(
+    Common::MqttCredentials **pMqttCredentials) const;
 
 template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
     Common::ObjectRegistrationRequestPackage>(
@@ -244,3 +249,19 @@ template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
     Common::ObjectRecordValue<double> *pArg3) const;
 
 // End of `GetPackageWithArgsInBytes` method explicit instantiations.
+
+template <typename T>
+T *Common::GetStructFromBytes(const uint8_t *kpData) const
+{
+  T *pStruct = (T *)malloc(sizeof(T));
+  memset(pStruct, 0, sizeof(T));
+  memcpy(pStruct, kpData, sizeof(T));
+
+  return pStruct;
+}
+
+// Explicit instantiations for `GetStructFromBytes` method.
+
+template Common::MqttCredentials *Common::GetStructFromBytes<Common::MqttCredentials>(const uint8_t *kpData) const;
+
+// End of `GetStructFromBytes` method explicit instantiations.

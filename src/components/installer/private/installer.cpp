@@ -59,6 +59,7 @@ void Installer::InitPins(const String kData)
 void Installer::Setup()
 {
     Serial.begin(SERIAL_BAUD);
+    EEPROM.begin(EEPROM_SIZE);
 
     delay(1000);
 

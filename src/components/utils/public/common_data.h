@@ -18,6 +18,7 @@
 #define SERIAL_BAUD 9600
 #define CPU_FREQUENCY 160
 #define DEEP_SLEEP_COUNT 60000
+#define EEPROM_SIZE 128
 #define uS_TO_S_FACTOR 1000000
 
 #define BLE_DEV_NAME "ESP32 Waste Bin"
@@ -101,8 +102,23 @@ public:
    */
   struct BytesPackage
   {
-    uint8_t *pBytes; //!< Byte array.
     size_t length;   //!< Byte array length.
+    uint8_t *pBytes; //!< Byte array.
+  };
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+  /**
+   * @struct MqttCredentials
+   * @brief Mqtt credentials.
+   */
+  struct MqttCredentials
+  {
+    uint8_t flag;
+    char server[30];
+    int32_t port;
+    char user[30];
+    char password[30];
   };
 #pragma pack(pop)
 

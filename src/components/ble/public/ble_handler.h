@@ -34,6 +34,7 @@ public:
    *                              *
    ********************************/
 
+#pragma pack(push, 1)
   /**
    * @struct BleCallback
    * @brief BLE callback.
@@ -43,6 +44,7 @@ public:
     String name;
     TCallback cb;
   };
+#pragma pack(pop)
 
   /**
    * @brief Constructor.

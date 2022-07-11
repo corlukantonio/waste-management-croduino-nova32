@@ -87,6 +87,17 @@ public:
   template <typename TPackage, typename... TArgs>
   const BytesPackage *GetPackageWithArgsInBytes(TPackage **pBasePackage, TArgs... args) const;
 
+  /**
+   * @fn GetStructFromBytes
+   * @brief Gets structure from bytes.
+   *
+   * @tparam T
+   * @param[in] kpData Data.
+   * @return Pointer to structure.
+   */
+  template <typename T>
+  T *GetStructFromBytes(const uint8_t *kpData) const;
+
 protected:
   /**
    * @brief The Singleton's constructor should always be private to prevent direct construction calls with the `new` operator.
