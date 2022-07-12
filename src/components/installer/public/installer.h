@@ -4,7 +4,6 @@
 #ifdef TARGET_ESP32DEV
 
 #include <Arduino.h>
-#include <EEPROM.h>
 
 #include "components/ble/public/ble_handler.h"
 #include "components/mqtt_handler/public/mqtt_handler.h"

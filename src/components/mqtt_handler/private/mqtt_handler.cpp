@@ -13,6 +13,8 @@ MqttHandler::MqttHandler(const char *kpName, uint32_t stackDepth, UBaseType_t ux
     Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMutexNotCreated));
   }
 
+  EEPROM.begin(EEPROM_SIZE);
+
   m_pMqttClient = new MQTTClient(256);
   m_pMqttClient->setKeepAlive(MQTT_KEEP_ALIVE);
   m_pWiFiClient = new WiFiClient();

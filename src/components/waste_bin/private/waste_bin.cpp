@@ -324,7 +324,7 @@ void WasteBin::Task()
 
     m_currentTime = millis();
 
-    if (!m_pBleHandler->GetIsDeviceConnected() && m_currentTime - m_startTime >= DEEP_SLEEP_COUNT)
+    if (!m_pBleHandler->GetIsDeviceConnected() && (m_currentTime - m_startTime >= DEEP_SLEEP_COUNT || m_isRecordPackageSent))
     {
       Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgDeepSleep));
 
