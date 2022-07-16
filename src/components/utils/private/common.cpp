@@ -2,14 +2,6 @@
 
 Common *Common::ms_pCommon{nullptr};
 
-/********************************
- *                              *
- * Methods.                     *
- * ---------------------------- *
- *                              *
- *                              *
- ********************************/
-
 Common *Common::GetInstance()
 {
   if (ms_pCommon == nullptr)
