@@ -145,7 +145,7 @@ void WasteBin::SendObjectRecordConfigRequest(const String kData) const
           ->GetPackageWithArgsInBytes<Common::ObjectRecordConfigRequestPackage>(
               &pObjectRecordConfigRequestPackage);
 
-  pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, sizeof(pBytesPackage->length) - 1);
+  pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
   if (m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[2], (char *)pBytesPackage->pBytes, pBytesPackage->length))
   {
@@ -191,7 +191,7 @@ void WasteBin::SendObjectRecordConfigApprovalRequest(const String kData) const
           ->GetPackageWithArgsInBytes<Common::ObjectRecordConfigApprovalRequestPackage>(
               &pObjectRecordConfigApprovalRequestPackage);
 
-  pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, sizeof(pBytesPackage->length) - 1);
+  pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
   if (m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[3], (char *)pBytesPackage->pBytes, pBytesPackage->length))
   {
@@ -259,7 +259,7 @@ void WasteBin::SendRecord(const String kData) const
               pHumidity,
               pTemperatureCelsius);
 
-  pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, sizeof(pBytesPackage->length) - 1);
+  pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
   if (m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[4], (char *)pBytesPackage->pBytes, pBytesPackage->length))
   {
