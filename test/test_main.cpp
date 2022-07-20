@@ -45,7 +45,7 @@ void GetPackageWithArgsInBytes_ValidObjectRegistrationRequestPackage(void)
             ->GetPackageWithArgsInBytes<Common::ObjectRegistrationRequestPackage>(
                 &pObjectRegistrationRequestPackage);
 
-    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, sizeof(pBytesPackage->length) - 1);
+    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
     // Assert
 
@@ -99,7 +99,7 @@ void GetPackageWithArgsInBytes_ValidObjectActivationRequestPackage(void)
             ->GetPackageWithArgsInBytes<Common::ObjectActivationRequestPackage>(
                 &pObjectActivationRequestPackage);
 
-    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, sizeof(pBytesPackage->length) - 1);
+    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
     // Assert
 
@@ -155,7 +155,7 @@ void GetPackageWithArgsInBytes_ValidObjectRecordConfigRequestPackage(void)
             ->GetPackageWithArgsInBytes<Common::ObjectRecordConfigRequestPackage>(
                 &pObjectRecordConfigRequestPackage);
 
-    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, sizeof(pBytesPackage->length) - 1);
+    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
     // Assert
 
@@ -211,7 +211,7 @@ void GetPackageWithArgsInBytes_ValidObjectRecordConfigApprovalRequestPackage(voi
             ->GetPackageWithArgsInBytes<Common::ObjectRecordConfigApprovalRequestPackage>(
                 &pObjectRecordConfigApprovalRequestPackage);
 
-    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, sizeof(pBytesPackage->length) - 1);
+    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
     // Assert
 
@@ -306,7 +306,7 @@ void GetPackageWithArgsInBytes_ValidObjectRecordBasePackageWithValues(void)
                 pArg3,
                 pArg4);
 
-    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, sizeof(pBytesPackage->length) - 1);
+    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
     pBytes = (uint8_t *)malloc(sizeof(double));
 
