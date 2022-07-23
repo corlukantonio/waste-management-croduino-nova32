@@ -124,6 +124,67 @@ void GetPackageWithArgsInBytes_ValidObjectActivationRequestPackage(void)
     TEST_ASSERT_EQUAL_UINT8(3, pBytesPackage->pBytes[17]);
 }
 
+void GetPackageWithArgsInBytes_ValidObjectSettingsPackage(void)
+{
+    // Arrange
+
+    uint8_t *pBytes;
+
+    double arg1Value = 0.0;
+
+    Common::ObjectSettingsPackage *pObjectSettingsPackage =
+        (Common::ObjectSettingsPackage *)malloc(sizeof(Common::ObjectSettingsPackage));
+
+    Common::ObjectRecordValue<double> *pArg1 =
+        (Common::ObjectRecordValue<double> *)malloc(sizeof(Common::ObjectRecordValue<double>));
+
+    pObjectSettingsPackage->packageType = OBJ_STG_PKG;
+    pObjectSettingsPackage->packageVersion = OBJ_STG_PKG_V;
+    pObjectSettingsPackage->mac[0] = 100;
+    pObjectSettingsPackage->mac[1] = 101;
+    pObjectSettingsPackage->mac[2] = 102;
+    pObjectSettingsPackage->mac[3] = 103;
+    pObjectSettingsPackage->mac[4] = 104;
+    pObjectSettingsPackage->mac[5] = 105;
+    pObjectSettingsPackage->numberOfValues = 1;
+
+    pArg1->type = 1;
+    pArg1->value = 3.14159;
+
+    // Act
+
+    const Common::BytesPackage *pBytesPackage =
+        Common::GetInstance()
+            ->GetPackageWithArgsInBytes<Common::ObjectSettingsPackage,
+                                        Common::ObjectRecordValue<double> *>(
+                &pObjectSettingsPackage,
+                pArg1);
+
+    pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
+
+    pBytes = (uint8_t *)malloc(sizeof(double));
+
+    for (size_t i = 0, j = 10; i < sizeof(double); i++, j++)
+        pBytes[i] = pBytesPackage->pBytes[j];
+
+    memcpy(&arg1Value, pBytes, sizeof(double));
+    free(pBytes);
+
+    // Assert
+
+    TEST_ASSERT_EQUAL(19, pBytesPackage->length);
+    TEST_ASSERT_EQUAL_UINT8(OBJ_STG_PKG, pBytesPackage->pBytes[0]);
+    TEST_ASSERT_EQUAL_UINT8(OBJ_STG_PKG_V, pBytesPackage->pBytes[1]);
+    TEST_ASSERT_EQUAL_UINT8(100, pBytesPackage->pBytes[2]);
+    TEST_ASSERT_EQUAL_UINT8(101, pBytesPackage->pBytes[3]);
+    TEST_ASSERT_EQUAL_UINT8(102, pBytesPackage->pBytes[4]);
+    TEST_ASSERT_EQUAL_UINT8(103, pBytesPackage->pBytes[5]);
+    TEST_ASSERT_EQUAL_UINT8(104, pBytesPackage->pBytes[6]);
+    TEST_ASSERT_EQUAL_UINT8(105, pBytesPackage->pBytes[7]);
+    TEST_ASSERT_EQUAL_UINT8(1, pBytesPackage->pBytes[8]);
+    TEST_ASSERT_EQUAL_DOUBLE(3.14159, arg1Value);
+}
+
 void GetPackageWithArgsInBytes_ValidObjectRecordConfigRequestPackage(void)
 {
     // Arrange
@@ -370,6 +431,7 @@ int RunSrcTests(void)
 
     RUN_TEST(GetPackageWithArgsInBytes_ValidObjectRegistrationRequestPackage);
     RUN_TEST(GetPackageWithArgsInBytes_ValidObjectActivationRequestPackage);
+    RUN_TEST(GetPackageWithArgsInBytes_ValidObjectSettingsPackage);
     RUN_TEST(GetPackageWithArgsInBytes_ValidObjectRecordConfigRequestPackage);
     RUN_TEST(GetPackageWithArgsInBytes_ValidObjectRecordConfigApprovalRequestPackage);
     RUN_TEST(GetPackageWithArgsInBytes_ValidObjectRecordBasePackageWithValues);

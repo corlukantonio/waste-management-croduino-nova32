@@ -106,8 +106,13 @@ void MqttHandler::AddMqttTopic(const char *kpMqttTopic)
 
 void MqttHandler::Task()
 {
+  /**
+   * The order in which you add MQTT topics is very important
+   */
+
   AddMqttTopic("iot/wm/devreg");
   AddMqttTopic("iot/wm/devact");
+  AddMqttTopic("iot/wm/devstg");
   AddMqttTopic("iot/wm/reccfg");
   AddMqttTopic("iot/wm/recapp");
   AddMqttTopic("iot/wm/record");

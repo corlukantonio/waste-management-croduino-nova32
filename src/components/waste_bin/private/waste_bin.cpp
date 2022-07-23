@@ -121,6 +121,51 @@ void WasteBin::SendObjectActivationRequest(const String kData) const
   xSemaphoreGive(m_mutex);
 }
 
+void WasteBin::SendObjectSettingsPackage(const String kData) const
+{
+  xSemaphoreTake(m_mutex, portMAX_DELAY);
+
+  Common::ObjectSettingsPackage *pObjectSettingsPackage =
+      (Common::ObjectSettingsPackage *)malloc(sizeof(Common::ObjectSettingsPackage));
+
+  Common::ObjectRecordValue<double> *pWasteBinCapacityLimit =
+      (Common::ObjectRecordValue<double> *)malloc(sizeof(Common::ObjectRecordValue<double>));
+
+  pObjectSettingsPackage->packageType = OBJ_STG_PKG;
+  pObjectSettingsPackage->packageVersion = OBJ_STG_PKG_V;
+  WiFi.macAddress(pObjectSettingsPackage->mac);
+  pObjectSettingsPackage->numberOfValues = 1;
+
+  pWasteBinCapacityLimit->type = WASTE_BIN_CAPACITY_LIMIT;
+  pWasteBinCapacityLimit->value = 3.0;
+
+  const Common::BytesPackage *pBytesPackage =
+      Common::GetInstance()
+          ->GetPackageWithArgsInBytes<Common::ObjectSettingsPackage,
+                                      Common::ObjectRecordValue<double> *>(
+              &pObjectSettingsPackage,
+              pWasteBinCapacityLimit);
+
+  pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
+
+  if (m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[2], (char *)pBytesPackage->pBytes, pBytesPackage->length))
+  {
+    for (size_t i = 0; i < pBytesPackage->length; i++)
+    {
+      Serial.print(pBytesPackage->pBytes[i]);
+
+      if (i < pBytesPackage->length - 1)
+      {
+        Serial.print(" ");
+      }
+    }
+
+    Serial.println("");
+  }
+
+  xSemaphoreGive(m_mutex);
+}
+
 void WasteBin::SendObjectRecordConfigRequest(const String kData) const
 {
   xSemaphoreTake(m_mutex, portMAX_DELAY);
@@ -147,7 +192,7 @@ void WasteBin::SendObjectRecordConfigRequest(const String kData) const
 
   pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
-  if (m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[2], (char *)pBytesPackage->pBytes, pBytesPackage->length))
+  if (m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[3], (char *)pBytesPackage->pBytes, pBytesPackage->length))
   {
     for (size_t i = 0; i < pBytesPackage->length; i++)
     {
@@ -193,7 +238,7 @@ void WasteBin::SendObjectRecordConfigApprovalRequest(const String kData) const
 
   pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
-  if (m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[3], (char *)pBytesPackage->pBytes, pBytesPackage->length))
+  if (m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[4], (char *)pBytesPackage->pBytes, pBytesPackage->length))
   {
     for (size_t i = 0; i < pBytesPackage->length; i++)
     {
@@ -239,13 +284,13 @@ void WasteBin::SendRecord(const String kData) const
   pObjectRecordBasePackage->numberOfValues = 3;
   pObjectRecordBasePackage->rssi = WiFi.RSSI();
 
-  pDistance->type = 1;
+  pDistance->type = DISTANCE;
   pDistance->value = m_cm;
 
-  pHumidity->type = 2;
+  pHumidity->type = HUMIDITY;
   pHumidity->value = m_humidity;
 
-  pTemperatureCelsius->type = 3;
+  pTemperatureCelsius->type = TEMPERATURE_CELSIUS;
   pTemperatureCelsius->value = m_temperatureCelsius;
 
   const Common::BytesPackage *pBytesPackage =
@@ -261,7 +306,7 @@ void WasteBin::SendRecord(const String kData) const
 
   pBytesPackage->pBytes[pBytesPackage->length - 1] = Common::GetInstance()->GetCrc(pBytesPackage->pBytes, pBytesPackage->length - 1);
 
-  if (m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[4], (char *)pBytesPackage->pBytes, pBytesPackage->length))
+  if (m_pMqttHandler->GetMqttClientObject()->publish(m_pMqttHandler->GetMqttTopics()[5], (char *)pBytesPackage->pBytes, pBytesPackage->length))
   {
     for (size_t i = 0; i < pBytesPackage->length; i++)
     {
@@ -279,12 +324,38 @@ void WasteBin::SendRecord(const String kData) const
   xSemaphoreGive(m_mutex);
 }
 
+void WasteBin::ReadSensorValues()
+{
+  digitalWrite(m_ultrasonicSensTrigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(m_ultrasonicSensTrigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(m_ultrasonicSensTrigPin, LOW);
+
+  m_duration = pulseIn(m_ultrasonicSensEchoPin, HIGH);
+  m_cm = m_duration / 29 / 2;
+
+  // Serial.println(m_cm);
+
+  m_humidity = m_pDht->readHumidity();
+  m_temperatureCelsius = m_pDht->readTemperature();
+
+  if (isnan(m_humidity) || isnan(m_temperatureCelsius))
+  {
+    Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgDhtReadFail));
+  }
+
+  // Serial.println(m_humidity);
+  // Serial.println(m_temperatureCelsius);
+}
+
 void WasteBin::Task()
 {
   m_pDht->begin();
 
   m_pBleHandler->AddCallback("wb.devreg", bind(&WasteBin::SendObjectRegistrationRequest, this, std::placeholders::_1));
   m_pBleHandler->AddCallback("wb.devact", bind(&WasteBin::SendObjectActivationRequest, this, std::placeholders::_1));
+  m_pBleHandler->AddCallback("wb.devstg", bind(&WasteBin::SendObjectSettingsPackage, this, std::placeholders::_1));
   m_pBleHandler->AddCallback("wb.reccfg", bind(&WasteBin::SendObjectRecordConfigRequest, this, std::placeholders::_1));
   m_pBleHandler->AddCallback("wb.recapp", bind(&WasteBin::SendObjectRecordConfigApprovalRequest, this, std::placeholders::_1));
   m_pBleHandler->AddCallback("wb.sendrecord", bind(&WasteBin::SendRecord, this, std::placeholders::_1));
@@ -293,27 +364,7 @@ void WasteBin::Task()
 
   while (true)
   {
-    digitalWrite(m_ultrasonicSensTrigPin, LOW);
-    delayMicroseconds(2);
-    digitalWrite(m_ultrasonicSensTrigPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(m_ultrasonicSensTrigPin, LOW);
-
-    m_duration = pulseIn(m_ultrasonicSensEchoPin, HIGH);
-    m_cm = m_duration / 29 / 2;
-
-    // Serial.println(m_cm);
-
-    m_humidity = m_pDht->readHumidity();
-    m_temperatureCelsius = m_pDht->readTemperature();
-
-    if (isnan(m_humidity) || isnan(m_temperatureCelsius))
-    {
-      Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgDhtReadFail));
-    }
-
-    // Serial.println(m_humidity);
-    // Serial.println(m_temperatureCelsius);
+    ReadSensorValues();
 
     if (m_pMqttHandler->GetMqttClientObject()->connected() && !isnan(m_humidity) && !isnan(m_temperatureCelsius) && !m_isRecordPackageSent)
     {
