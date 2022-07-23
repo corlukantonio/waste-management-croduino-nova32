@@ -107,6 +107,7 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
 #endif
 }
 
+#ifdef TARGET_ESP32DEV
 const std::vector<String> Common::GetArgs(const String kData) const
 {
   std::vector<String> tokens;
@@ -121,6 +122,7 @@ const std::vector<String> Common::GetArgs(const String kData) const
 
   return tokens;
 }
+#endif
 
 const uint8_t Common::GetCrc(const uint8_t *kpData, const size_t kSize) const
 {

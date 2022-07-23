@@ -65,6 +65,7 @@ public:
    */
   const char *GetAlertMessage(AlertMessageEnum alertMessage, size_t n = 0, ...) const;
 
+#ifdef TARGET_ESP32DEV
   /**
    * @fn GetArgs
    * @brief Gets arguments.
@@ -73,6 +74,7 @@ public:
    * @return Constant value of `vector<String>` data type.
    */
   const std::vector<String> GetArgs(const String kData) const;
+#endif
 
   /**
    * @fn GetCrc
