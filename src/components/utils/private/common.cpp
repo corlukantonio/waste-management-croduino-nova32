@@ -107,6 +107,21 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
 #endif
 }
 
+const std::vector<String> Common::GetArgs(const String kData) const
+{
+  std::vector<String> tokens;
+
+  char *token = strtok((char *)kData.c_str(), " ");
+
+  while (token != NULL)
+  {
+    tokens.push_back(String(token));
+    token = strtok(NULL, " ");
+  }
+
+  return tokens;
+}
+
 const uint8_t Common::GetCrc(const uint8_t *kpData, const size_t kSize) const
 {
   uint8_t crc = 0x00;

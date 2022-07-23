@@ -56,9 +56,9 @@ void BleHandler::Task()
     {
       for (BleCallback bleCallback : m_vBleCallbacks)
       {
-        if (bleCallback.name.equals(m_qBleCallbacks.front()))
+        if (Common::GetInstance()->GetArgs(bleCallback.name).at(0).equals(Common::GetInstance()->GetArgs(m_qBleCallbacks.front()).at(0)))
         {
-          bleCallback.cb("");
+          bleCallback.cb(m_qBleCallbacks.front());
 
           break;
         }
