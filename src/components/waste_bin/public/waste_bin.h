@@ -8,6 +8,8 @@
 #include <ESP32Time.h>
 #include <freertos/semphr.h>
 
+#include <vector>
+
 #include "components/ble/public/ble_handler.h"
 #include "components/mqtt_handler/public/mqtt_handler.h"
 #include "components/task_handler/public/task_handler.h"

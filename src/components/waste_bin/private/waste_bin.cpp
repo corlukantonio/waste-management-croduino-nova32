@@ -137,7 +137,15 @@ void WasteBin::SendObjectSettingsPackage(const String kData) const
   pObjectSettingsPackage->numberOfValues = 1;
 
   pWasteBinCapacityLimit->type = WASTE_BIN_CAPACITY_LIMIT;
-  pWasteBinCapacityLimit->value = 3.0;
+
+  if (Common::GetInstance()->GetArgs(kData).size() > 1)
+  {
+    pWasteBinCapacityLimit->value = Common::GetInstance()->GetArgs(kData).at(1).toDouble();
+  }
+  else
+  {
+    pWasteBinCapacityLimit->value = 7.0;
+  }
 
   const Common::BytesPackage *pBytesPackage =
       Common::GetInstance()

@@ -9,6 +9,7 @@
 #endif
 
 #include <type_traits>
+#include <vector>
 
 #include "components/utils/public/common_data.h"
 
@@ -63,6 +64,15 @@ public:
    * @return constant pointer to char array.
    */
   const char *GetAlertMessage(AlertMessageEnum alertMessage, size_t n = 0, ...) const;
+
+  /**
+   * @fn GetArgs
+   * @brief Gets arguments.
+   *
+   * @param[in] kData Data.
+   * @return Constant value of `vector<String>` data type.
+   */
+  const std::vector<String> GetArgs(const String kData) const;
 
   /**
    * @fn GetCrc
