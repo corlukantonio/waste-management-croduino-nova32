@@ -30,9 +30,13 @@
 #define WIFI_WAIT_CONNECTION_MS 15000
 
 #define MQTT_CLIENT_ID "esp32dev"
-#define MQTT_TOPICS_MAX 5
+#define MQTT_TOPICS_MAX 6
 #define MQTT_TOPIC_MAX_CHAR 30
 #define MQTT_KEEP_ALIVE 30
+
+/**
+ * Package types and versions.
+ */
 
 #define OBJ_REG_REQ_PKG 0x01
 #define OBJ_REG_REQ_PKG_V 0x01
@@ -40,14 +44,31 @@
 #define OBJ_ACT_REQ_PKG 0x02
 #define OBJ_ACT_REQ_PKG_V 0x01
 
-#define OBJ_REC_CFG_REQ_PKG 0x03
+#define OBJ_STG_PKG 0x03
+#define OBJ_STG_PKG_V 0x01
+
+#define OBJ_REC_CFG_REQ_PKG 0x04
 #define OBJ_REC_CFG_REQ_PKG_V 0x01
 
-#define OBJ_REC_CFG_APV_REQ_PKG 0x04
+#define OBJ_REC_CFG_APV_REQ_PKG 0x05
 #define OBJ_REC_CFG_APV_REQ_PKG_V 0x01
 
-#define OBJ_REC_BASE_PKG 0x05
+#define OBJ_REC_BASE_PKG 0x06
 #define OBJ_REC_BASE_PKG_V 0x01
+
+/**
+ * Settings types.
+ */
+
+#define WASTE_BIN_CAPACITY_LIMIT 0x01
+
+/**
+ * Value types.
+ */
+
+#define DISTANCE 0x01
+#define HUMIDITY 0x02
+#define TEMPERATURE_CELSIUS 0x03
 
 /**
  * @class CommonData
@@ -133,7 +154,7 @@ public:
     uint8_t packageVersion;
     uint8_t mac[6];
     uint8_t rtc[6];
-    uint8_t crc;
+    uint8_t crc; //!< Cyclic Redundancy Check.
   };
 #pragma pack(pop)
 
@@ -149,7 +170,25 @@ public:
     uint8_t mac[6];
     uint8_t rtc[6];
     uint8_t activationCode[4];
-    uint8_t crc;
+    uint8_t crc; //!< Cyclic Redundancy Check.
+  };
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+  /**
+   * @brief ObjectSettingsPackage
+   * @brief Object settings package.
+   */
+  struct ObjectSettingsPackage
+  {
+    uint8_t packageType;
+    uint8_t packageVersion;
+    uint8_t mac[6];
+    uint8_t numberOfValues;
+    // ...
+    // This space will be occupied by objects of type `ObjectRecordValue`.
+    // ...
+    uint8_t crc; //!< Cyclic Redundancy Check.
   };
 #pragma pack(pop)
 
@@ -166,7 +205,7 @@ public:
     uint8_t rtc[6];
     uint8_t recordBasePackageVersion;
     uint8_t numberOfValues;
-    uint8_t crc;
+    uint8_t crc; //!< Cyclic Redundancy Check.
   };
 #pragma pack(pop)
 
@@ -182,7 +221,7 @@ public:
     uint8_t mac[6];
     uint8_t rtc[6];
     uint8_t approvalCode[4];
-    uint8_t crc;
+    uint8_t crc; //!< Cyclic Redundancy Check.
   };
 #pragma pack(pop)
 

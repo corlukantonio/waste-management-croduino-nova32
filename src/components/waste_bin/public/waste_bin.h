@@ -69,11 +69,19 @@ private:
 
   /**
    * @fn SendObjectActivationRequest
-   * @brief Send object activation request
+   * @brief Send object activation request.
    *
    * @param kData Data.
    */
   void SendObjectActivationRequest(const String kData = "") const;
+
+  /**
+   * @fn SendObjectSettingsPackage
+   * @brief Send object settings package.
+   *
+   * @param kData Data.
+   */
+  void SendObjectSettingsPackage(const String kData = "") const;
 
   /**
    * @fn SendObjectRecordConfigRequest
@@ -98,6 +106,8 @@ private:
    * @param kData Data.
    */
   void SendRecord(const String kData = "") const;
+
+  void ReadSensorValues();
 
   /********************************
    *                              *

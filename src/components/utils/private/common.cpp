@@ -168,7 +168,8 @@ const Common::BytesPackage *Common::GetPackageWithArgsInBytes(TPackage **pBasePa
     pPackage = (uint8_t *)malloc(packageLength);
     memcpy(pPackage, pBasePackageInBytes, packageLength);
   }
-  else if (std::is_same<TPackage, ObjectRecordBasePackage>::value)
+  else if (std::is_same<TPackage, ObjectSettingsPackage>::value ||
+           std::is_same<TPackage, ObjectRecordBasePackage>::value)
   {
     GetArgsLength(argsLength, args...);
 
@@ -177,7 +178,8 @@ const Common::BytesPackage *Common::GetPackageWithArgsInBytes(TPackage **pBasePa
 
     for (size_t i = 0; i < packageLength; i++)
     {
-      if (i == 15)
+      if ((std::is_same<TPackage, ObjectSettingsPackage>::value && i == 9) ||
+          (std::is_same<TPackage, ObjectRecordBasePackage>::value && i == 15))
       {
         InsertArgToByteArray(i, pPackage, args...);
 
@@ -209,6 +211,12 @@ template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
 template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
     Common::ObjectActivationRequestPackage>(
     Common::ObjectActivationRequestPackage **pObjectActivationRequestPackage) const;
+
+template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
+    Common::ObjectSettingsPackage,
+    Common::ObjectRecordValue<double> *>(
+    Common::ObjectSettingsPackage **pObjectSettingsPackage,
+    Common::ObjectRecordValue<double> *pArg1) const;
 
 template const Common::BytesPackage *Common::GetPackageWithArgsInBytes<
     Common::ObjectRecordConfigRequestPackage>(
