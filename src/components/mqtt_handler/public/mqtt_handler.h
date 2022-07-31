@@ -10,6 +10,7 @@
 #include <WiFi.h>
 
 #include "components/task_handler/public/task_handler.h"
+#include "components/ble/public/ble_handler.h"
 #include "components/utils/public/common.h"
 #include "components/wifi_handler/public/wifi_handler.h"
 
@@ -29,9 +30,10 @@ public:
    * @param[in] uxPriority Priority.
    * @param[in] pTaskHandler Pointer to the task handler.
    * @param[in] xCoreID Core ID.
+   * @param[in] pBleHandler Pointer to BLE handler.
    * @param[in] pWiFiHandler Pointer to WiFi handler.
    */
-  MqttHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, WiFiHandler *pWiFiHandler);
+  MqttHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, BleHandler *pBleHandler, WiFiHandler *pWiFiHandler);
 
   /**
    * @brief Destructor.
@@ -67,6 +69,15 @@ protected:
 
 private:
   /**
+   * @fn OnMessage
+   * @brief On message.
+   *
+   * @param[in] topic Topic.
+   * @param[in] payload Payload.
+   */
+  void OnMessage(String &topic, String &payload);
+
+  /**
    * @fn AddMqttTopic
    * @brief Adds MQTT topic.
    *
@@ -83,6 +94,7 @@ private:
    ********************************/
 
   SemaphoreHandle_t m_mutex;                   //!< Mutex.
+  BleHandler *m_pBleHandler;                   //!< BLE handler.
   MQTTClient *m_pMqttClient;                   //!< MQTT client.
   WiFiClient *m_pWiFiClient;                   //!< WiFi client.
   WiFiHandler *m_pWiFiHandler;                 //!< WiFi handler.

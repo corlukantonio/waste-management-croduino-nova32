@@ -81,6 +81,14 @@ public:
   bool GetIsDeviceConnected() const;
 
   /**
+   * @fn AddCommand
+   * @brief Add command.
+   *
+   * @param[in] kData Data.
+   */
+  void AddCommand(const String kData);
+
+  /**
    * @fn AddCallback
    * @brief Adds callback.
    *

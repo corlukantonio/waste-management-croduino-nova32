@@ -1,6 +1,9 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+#include <iomanip>
+#include <sstream>
+
 #ifdef TARGET_ESP32DEV
 #include <Arduino.h>
 #else
@@ -16,6 +19,8 @@
 #ifdef TARGET_ESP32DEV
 typedef std::function<void(String)> TCallback;
 #endif
+
+constexpr char hexmap[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
 /**
  * @class Common
@@ -75,6 +80,16 @@ public:
    */
   const std::vector<String> GetArgs(const String kData) const;
 #endif
+
+  /**
+   * @fn GetHexStr
+   * @brief Get hex string.
+   *
+   * @param pData Data.
+   * @param len Length.
+   * @return Hex string.
+   */
+  std::string GetHexStr(unsigned char *pData, int len);
 
   /**
    * @fn GetCrc

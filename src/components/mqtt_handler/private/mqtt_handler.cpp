@@ -2,8 +2,9 @@
 
 #ifdef TARGET_ESP32DEV
 
-MqttHandler::MqttHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, WiFiHandler *pWiFiHandler)
+MqttHandler::MqttHandler(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, BleHandler *pBleHandler, WiFiHandler *pWiFiHandler)
     : TaskHandler(kpName, stackDepth, uxPriority, pTaskHandler, xCoreID),
+      m_pBleHandler(pBleHandler),
       m_pWiFiHandler(pWiFiHandler)
 {
   m_mutex = xSemaphoreCreateMutex();
@@ -76,6 +77,11 @@ MQTTClient *MqttHandler::GetMqttClientObject() const
   return m_pMqttClient;
 }
 
+void MqttHandler::OnMessage(String &topic, String &payload)
+{
+  m_pBleHandler->AddCommand(payload);
+}
+
 void MqttHandler::AddMqttTopic(const char *kpMqttTopic)
 {
   xSemaphoreTake(m_mutex, portMAX_DELAY);
@@ -107,7 +113,7 @@ void MqttHandler::AddMqttTopic(const char *kpMqttTopic)
 void MqttHandler::Task()
 {
   /**
-   * The order in which you add MQTT topics is very important
+   * The order in which you add MQTT topics is very important.
    */
 
   AddMqttTopic("iot/wm/devreg");
@@ -125,6 +131,8 @@ void MqttHandler::Task()
       {
         m_pMqttClient->begin(m_pMqttCredentials->server, m_pMqttCredentials->port, *m_pWiFiClient);
 
+        m_pMqttClient->onMessage(std::bind(&MqttHandler::OnMessage, this, std::placeholders::_1, std::placeholders::_2));
+
         if (!m_pMqttClient->connect(MQTT_CLIENT_ID, m_pMqttCredentials->user, m_pMqttCredentials->password))
         {
           Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnectionFailed));
@@ -133,6 +141,15 @@ void MqttHandler::Task()
         if (m_pMqttClient->connected())
         {
           Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMqttConnected, 1, m_pMqttCredentials->server));
+
+          String topicSub = String("iot/wm/response/");
+          uint8_t mac[6];
+
+          WiFi.macAddress(mac);
+
+          topicSub.concat(Common::GetInstance()->GetHexStr(mac, 6).c_str());
+
+          m_pMqttClient->subscribe(topicSub);
         }
       }
       catch (const std::exception &e)
@@ -147,6 +164,11 @@ void MqttHandler::Task()
 
   while (true)
   {
+    if (m_pMqttClient->connected())
+    {
+      m_pMqttClient->loop();
+    }
+
 #if LOG_STACK == 1
     Serial.print("MqttHandler: ");
     Serial.println(uxTaskGetStackHighWaterMark(NULL));

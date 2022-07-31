@@ -3,6 +3,7 @@
 #ifdef TARGET_ESP32DEV
 
 RTC_DATA_ATTR int bootCount = 0; //!< Boot count.
+RTC_DATA_ATTR ESP32Time rtc;     //!< RTC.
 
 Installer *Installer::ms_pInstaller{nullptr};
 
@@ -86,8 +87,8 @@ void Installer::Setup()
     PwmHandler *pPwmHandler = new PwmHandler("PwmHandler", 2048, (BaseType_t)2U, &taskPwmHandler, 0);
     BleHandler *pBleHandler = new BleHandler("BleHandler", 2048, tskIDLE_PRIORITY, &taskBleHandler, 0, pPwmHandler, m_buzzerPin);
     WiFiHandler *pWiFiHandler = new WiFiHandler("WiFiHandler", 2048, tskIDLE_PRIORITY, &taskWiFiHandler, 0);
-    MqttHandler *pMqttHandler = new MqttHandler("MqttHandler", 3072, (BaseType_t)1U, &taskMqttHandler, 0, pWiFiHandler);
-    WasteBin *pWasteBin = new WasteBin("WasteBin", 2048, (BaseType_t)1U, &taskWasteBin, 1, pBleHandler, pWiFiHandler, pMqttHandler, m_buzzerPin, m_ledPin, m_pirPin, m_tempHumiSensPin, m_ultrasonicSensEchoPin, m_ultrasonicSensTrigPin);
+    MqttHandler *pMqttHandler = new MqttHandler("MqttHandler", 3072, (BaseType_t)1U, &taskMqttHandler, 0, pBleHandler, pWiFiHandler);
+    WasteBin *pWasteBin = new WasteBin("WasteBin", 2048, (BaseType_t)1U, &taskWasteBin, 1, pBleHandler, pWiFiHandler, pMqttHandler, &rtc, bootCount, m_buzzerPin, m_ledPin, m_pirPin, m_tempHumiSensPin, m_ultrasonicSensEchoPin, m_ultrasonicSensTrigPin);
 
     pBleHandler->AddCallback("installer.initpins", bind(&Installer::InitPins, this, std::placeholders::_1));
 

@@ -124,6 +124,17 @@ const std::vector<String> Common::GetArgs(const String kData) const
 }
 #endif
 
+std::string Common::GetHexStr(unsigned char *pData, int len)
+{
+  std::stringstream ss;
+  ss << std::hex;
+
+  for (int i(0); i < len; ++i)
+    ss << std::setw(2) << std::setfill('0') << (int)pData[i];
+
+  return ss.str();
+}
+
 const uint8_t Common::GetCrc(const uint8_t *kpData, const size_t kSize) const
 {
   uint8_t crc = 0x00;
