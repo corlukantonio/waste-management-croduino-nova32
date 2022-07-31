@@ -35,6 +35,8 @@ public:
    * @param[in] pBleHandler Pointer to BLE handler.
    * @param[in] pWiFiHandler Pointer to WiFi handler.
    * @param[in] pMqttHandler Pointer to MQTT handler.
+   * @param[in] pRtc Pointer to RTC.
+   * @param[in] bootCount Boot count.
    * @param[in] kBuzzerPin Buzzer pin.
    * @param[in] kLedPin LED pin.
    * @param[in] kPirPin PIR motion sensor pin.
@@ -42,7 +44,7 @@ public:
    * @param[in] kUltrasonicSensEchoPin Ultrasonic sensor echo pin.
    * @param[in] kUltrasonicSensTrigPin Ultrasonic sensor trig pin.
    */
-  WasteBin(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, BleHandler *pBleHandler, WiFiHandler *pWiFiHandler, MqttHandler *pMqttHandler, const uint8_t kBuzzerPin, const uint8_t kLedPin, const uint8_t kPirPin, const uint8_t kTempHumiSensPin, const uint8_t kUltrasonicSensEchoPin, const uint8_t kUltrasonicSensTrigPin);
+  WasteBin(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, BleHandler *pBleHandler, WiFiHandler *pWiFiHandler, MqttHandler *pMqttHandler, ESP32Time *pRtc, int bootCount, const uint8_t kBuzzerPin, const uint8_t kLedPin, const uint8_t kPirPin, const uint8_t kTempHumiSensPin, const uint8_t kUltrasonicSensEchoPin, const uint8_t kUltrasonicSensTrigPin);
 
   /**
    * @brief Destructor.
@@ -62,10 +64,18 @@ protected:
 
 private:
   /**
+   * @fn SetRtc
+   * @brief Set RTC.
+   *
+   * @param[in] kData Data.
+   */
+  void SetRtc(const String kData = "");
+
+  /**
    * @fn SendObjectRegistrationRequest
    * @brief Send object registration request.
    *
-   * @param kData Data.
+   * @param[in] kData Data.
    */
   void SendObjectRegistrationRequest(const String kData = "") const;
 
@@ -73,7 +83,7 @@ private:
    * @fn SendObjectActivationRequest
    * @brief Send object activation request.
    *
-   * @param kData Data.
+   * @param[in] kData Data.
    */
   void SendObjectActivationRequest(const String kData = "") const;
 
@@ -81,7 +91,7 @@ private:
    * @fn SendObjectSettingsPackage
    * @brief Send object settings package.
    *
-   * @param kData Data.
+   * @param[in] kData Data.
    */
   void SendObjectSettingsPackage(const String kData = "") const;
 
@@ -89,7 +99,7 @@ private:
    * @fn SendObjectRecordConfigRequest
    * @brief Send object record config request.
    *
-   * @param kData Data.
+   * @param[in] kData Data.
    */
   void SendObjectRecordConfigRequest(const String kData = "") const;
 
@@ -97,7 +107,7 @@ private:
    * @fn SendObjectRecordConfigApprovalRequest
    * @brief Send object record config approval request.
    *
-   * @param kData Data.
+   * @param[in] kData Data.
    */
   void SendObjectRecordConfigApprovalRequest(const String kData = "") const;
 
@@ -105,10 +115,14 @@ private:
    * @fn SendRecord
    * @brief Sends data to the MQTT topic.
    *
-   * @param kData Data.
+   * @param[in] kData Data.
    */
   void SendRecord(const String kData = "") const;
 
+  /**
+   * @fn ReadSensorValues
+   * @brief Read sensor values.
+   */
   void ReadSensorValues();
 
   /********************************
@@ -129,6 +143,7 @@ private:
   unsigned long m_currentTime;             //!< Current time.
   double m_duration, m_cm;                 //!< Ultrasonic sensor value.
   double m_humidity, m_temperatureCelsius; //!< Temperature and humidity sensor value.
+  int m_timeToSleepUs;                     //!< Time to sleep.
   uint8_t m_buzzerPin;                     //!< Buzzer pin.
   uint8_t m_ledPin;                        //!< LED pin.
   uint8_t m_pirPin;                        //!< PIR motion sensor pin.
@@ -138,6 +153,7 @@ private:
   uint8_t m_ultrasonicSensEchoPin;         //!< Ultrasonic sensor echo pin.
   uint8_t m_ultrasonicSensTrigPin;         //!< Ultrasonic sensor trig pin.
   bool m_isRecordPackageSent;              //!< Is record package sent.
+  bool m_isResponseArrived;                //!< Is response arrived.
 };
 
 #endif

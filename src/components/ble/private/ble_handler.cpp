@@ -39,6 +39,11 @@ bool BleHandler::GetIsDeviceConnected() const
   return m_pCustomBLEServerCallbacks->GetIsDeviceConnected();
 }
 
+void BleHandler::AddCommand(const String kData)
+{
+  m_qBleCallbacks.push(kData);
+}
+
 void BleHandler::AddCallback(const char *kpName, TCallback cb)
 {
   xSemaphoreTake(m_mutex, portMAX_DELAY);

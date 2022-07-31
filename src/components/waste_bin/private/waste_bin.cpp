@@ -2,11 +2,12 @@
 
 #ifdef TARGET_ESP32DEV
 
-WasteBin::WasteBin(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, BleHandler *pBleHandler, WiFiHandler *pWiFiHandler, MqttHandler *pMqttHandler, const uint8_t kBuzzerPin, const uint8_t kLedPin, const uint8_t kPirPin, const uint8_t kTempHumiSensPin, const uint8_t kUltrasonicSensEchoPin, const uint8_t kUltrasonicSensTrigPin)
+WasteBin::WasteBin(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriority, TaskHandle_t *pTaskHandler, BaseType_t xCoreID, BleHandler *pBleHandler, WiFiHandler *pWiFiHandler, MqttHandler *pMqttHandler, ESP32Time *pRtc, int bootCount, const uint8_t kBuzzerPin, const uint8_t kLedPin, const uint8_t kPirPin, const uint8_t kTempHumiSensPin, const uint8_t kUltrasonicSensEchoPin, const uint8_t kUltrasonicSensTrigPin)
     : TaskHandler(kpName, stackDepth, uxPriority, pTaskHandler, xCoreID),
       m_pBleHandler(pBleHandler),
       m_pWiFiHandler(pWiFiHandler),
       m_pMqttHandler(pMqttHandler),
+      m_pRtc(pRtc),
       m_buzzerPin(kBuzzerPin),
       m_ledPin(kLedPin),
       m_pirPin(kPirPin),
@@ -21,16 +22,37 @@ WasteBin::WasteBin(const char *kpName, uint32_t stackDepth, UBaseType_t uxPriori
     Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgMutexNotCreated));
   }
 
-  m_pDht = new DHT(kTempHumiSensPin, DHT11);
-  m_pRtc = new ESP32Time();
+  if (bootCount == 1)
+  {
+    m_pRtc->setTime();
+  }
 
-  m_pRtc->setTime();
+  m_pDht = new DHT(kTempHumiSensPin, DHT11);
 
   m_startTime = millis();
   m_currentTime = millis();
   m_pirPinState = LOW;
   m_pirPinStatePrev = m_pirPinState;
   m_isRecordPackageSent = false;
+  m_isResponseArrived = false;
+}
+
+void WasteBin::SetRtc(const String kData)
+{
+  Serial.println(kData);
+
+  int year = std::stoi(Common::GetInstance()->GetArgs(kData)[1].c_str());
+  int month = std::stoi(Common::GetInstance()->GetArgs(kData)[2].c_str());
+  int day = std::stoi(Common::GetInstance()->GetArgs(kData)[3].c_str());
+  int hour = std::stoi(Common::GetInstance()->GetArgs(kData)[4].c_str());
+  int min = std::stoi(Common::GetInstance()->GetArgs(kData)[5].c_str());
+  int sec = std::stoi(Common::GetInstance()->GetArgs(kData)[6].c_str());
+
+  m_pRtc->setTime(sec, min, hour, day, month, year);
+
+  vTaskDelay(2000 / portTICK_PERIOD_MS);
+
+  m_isResponseArrived = true;
 }
 
 void WasteBin::SendObjectRegistrationRequest(const String kData) const
@@ -43,8 +65,8 @@ void WasteBin::SendObjectRegistrationRequest(const String kData) const
   pObjectRegistrationRequestPackage->packageType = OBJ_REG_REQ_PKG;
   pObjectRegistrationRequestPackage->packageVersion = OBJ_REG_REQ_PKG_V;
   WiFi.macAddress(pObjectRegistrationRequestPackage->mac);
-  pObjectRegistrationRequestPackage->rtc[0] = m_pRtc->getYear();
-  pObjectRegistrationRequestPackage->rtc[1] = m_pRtc->getMonth();
+  pObjectRegistrationRequestPackage->rtc[0] = m_pRtc->getYear() % 100;
+  pObjectRegistrationRequestPackage->rtc[1] = m_pRtc->getMonth() + 1;
   pObjectRegistrationRequestPackage->rtc[2] = m_pRtc->getDay();
   pObjectRegistrationRequestPackage->rtc[3] = m_pRtc->getHour();
   pObjectRegistrationRequestPackage->rtc[4] = m_pRtc->getMinute();
@@ -85,8 +107,8 @@ void WasteBin::SendObjectActivationRequest(const String kData) const
   pObjectActivationRequestPackage->packageType = OBJ_ACT_REQ_PKG;
   pObjectActivationRequestPackage->packageVersion = OBJ_ACT_REQ_PKG_V;
   WiFi.macAddress(pObjectActivationRequestPackage->mac);
-  pObjectActivationRequestPackage->rtc[0] = m_pRtc->getYear();
-  pObjectActivationRequestPackage->rtc[1] = m_pRtc->getMonth();
+  pObjectActivationRequestPackage->rtc[0] = m_pRtc->getYear() % 100;
+  pObjectActivationRequestPackage->rtc[1] = m_pRtc->getMonth() + 1;
   pObjectActivationRequestPackage->rtc[2] = m_pRtc->getDay();
   pObjectActivationRequestPackage->rtc[3] = m_pRtc->getHour();
   pObjectActivationRequestPackage->rtc[4] = m_pRtc->getMinute();
@@ -184,8 +206,8 @@ void WasteBin::SendObjectRecordConfigRequest(const String kData) const
   pObjectRecordConfigRequestPackage->packageType = OBJ_REC_CFG_REQ_PKG;
   pObjectRecordConfigRequestPackage->packageVersion = OBJ_REC_CFG_REQ_PKG_V;
   WiFi.macAddress(pObjectRecordConfigRequestPackage->mac);
-  pObjectRecordConfigRequestPackage->rtc[0] = m_pRtc->getYear();
-  pObjectRecordConfigRequestPackage->rtc[1] = m_pRtc->getMonth();
+  pObjectRecordConfigRequestPackage->rtc[0] = m_pRtc->getYear() % 100;
+  pObjectRecordConfigRequestPackage->rtc[1] = m_pRtc->getMonth() + 1;
   pObjectRecordConfigRequestPackage->rtc[2] = m_pRtc->getDay();
   pObjectRecordConfigRequestPackage->rtc[3] = m_pRtc->getHour();
   pObjectRecordConfigRequestPackage->rtc[4] = m_pRtc->getMinute();
@@ -228,8 +250,8 @@ void WasteBin::SendObjectRecordConfigApprovalRequest(const String kData) const
   pObjectRecordConfigApprovalRequestPackage->packageType = OBJ_REC_CFG_REQ_PKG;
   pObjectRecordConfigApprovalRequestPackage->packageVersion = OBJ_REC_CFG_REQ_PKG_V;
   WiFi.macAddress(pObjectRecordConfigApprovalRequestPackage->mac);
-  pObjectRecordConfigApprovalRequestPackage->rtc[0] = m_pRtc->getYear();
-  pObjectRecordConfigApprovalRequestPackage->rtc[1] = m_pRtc->getMonth();
+  pObjectRecordConfigApprovalRequestPackage->rtc[0] = m_pRtc->getYear() % 100;
+  pObjectRecordConfigApprovalRequestPackage->rtc[1] = m_pRtc->getMonth() + 1;
   pObjectRecordConfigApprovalRequestPackage->rtc[2] = m_pRtc->getDay();
   pObjectRecordConfigApprovalRequestPackage->rtc[3] = m_pRtc->getHour();
   pObjectRecordConfigApprovalRequestPackage->rtc[4] = m_pRtc->getMinute();
@@ -283,8 +305,8 @@ void WasteBin::SendRecord(const String kData) const
   pObjectRecordBasePackage->packageType = OBJ_REC_BASE_PKG;
   pObjectRecordBasePackage->packageVersion = OBJ_REC_BASE_PKG_V;
   WiFi.macAddress(pObjectRecordBasePackage->mac);
-  pObjectRecordBasePackage->rtc[0] = m_pRtc->getYear();
-  pObjectRecordBasePackage->rtc[1] = m_pRtc->getMonth();
+  pObjectRecordBasePackage->rtc[0] = m_pRtc->getYear() % 100;
+  pObjectRecordBasePackage->rtc[1] = m_pRtc->getMonth() + 1;
   pObjectRecordBasePackage->rtc[2] = m_pRtc->getDay();
   pObjectRecordBasePackage->rtc[3] = m_pRtc->getHour();
   pObjectRecordBasePackage->rtc[4] = m_pRtc->getMinute();
@@ -361,6 +383,7 @@ void WasteBin::Task()
 {
   m_pDht->begin();
 
+  m_pBleHandler->AddCallback("st", bind(&WasteBin::SetRtc, this, std::placeholders::_1));
   m_pBleHandler->AddCallback("wb.devreg", bind(&WasteBin::SendObjectRegistrationRequest, this, std::placeholders::_1));
   m_pBleHandler->AddCallback("wb.devact", bind(&WasteBin::SendObjectActivationRequest, this, std::placeholders::_1));
   m_pBleHandler->AddCallback("wb.devstg", bind(&WasteBin::SendObjectSettingsPackage, this, std::placeholders::_1));
@@ -383,7 +406,7 @@ void WasteBin::Task()
 
     m_currentTime = millis();
 
-    if (!m_pBleHandler->GetIsDeviceConnected() && (m_currentTime - m_startTime >= DEEP_SLEEP_COUNT || m_isRecordPackageSent))
+    if (!m_pBleHandler->GetIsDeviceConnected() && (m_currentTime - m_startTime >= DEEP_SLEEP_COUNT || (m_isRecordPackageSent && m_isResponseArrived)))
     {
       Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgDeepSleep));
 
@@ -395,7 +418,26 @@ void WasteBin::Task()
       vTaskDelay(2000 / portTICK_PERIOD_MS);
 
       esp_sleep_enable_ext0_wakeup(GPIO_NUM_4, HIGH);
-      esp_sleep_enable_timer_wakeup(1800 * uS_TO_S_FACTOR);
+
+      if (m_pRtc->getMinute() >= 30 && m_pRtc->getMinute() < 60)
+      {
+        m_timeToSleepUs = abs((3600 * uS_TO_S_FACTOR) - (m_pRtc->getMinute() * 60 * uS_TO_S_FACTOR));
+      }
+      else if (m_pRtc->getMinute() >= 0 && m_pRtc->getMinute() < 30)
+      {
+        m_timeToSleepUs = abs((1800 * uS_TO_S_FACTOR) - (m_pRtc->getMinute() * 60 * uS_TO_S_FACTOR));
+      }
+      else
+      {
+        m_timeToSleepUs = (1800 * uS_TO_S_FACTOR);
+      }
+
+      esp_sleep_enable_timer_wakeup(m_timeToSleepUs);
+
+      Serial.println("Wake up in: " + String(m_timeToSleepUs * 1 / uS_TO_S_FACTOR) + " seconds.");
+
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
+
       esp_deep_sleep_start();
     }
 
