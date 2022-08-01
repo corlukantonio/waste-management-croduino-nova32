@@ -9,3 +9,5 @@
 <p align="center">
   <img src="https://user-images.githubusercontent.com/32845849/182188313-f2fa1a07-1f63-4737-baf9-a2d0e47afcfe.png" alt="waste-management-cloud-scheme-v2-iot-dev">
 </p>
+
+**Figure 1.** - Waste Management System
