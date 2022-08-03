@@ -22,7 +22,7 @@ MqttHandler::MqttHandler(const char *kpName, uint32_t stackDepth, UBaseType_t ux
 
   if (EEPROM.readByte(4) != 0xFF)
   {
-    Serial.println("Writing MQTT credentials to EEPROM.");
+    Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgEepromWriteMqttCreds));
 
     m_pMqttCredentials = (Common::MqttCredentials *)malloc(sizeof(Common::MqttCredentials));
 
@@ -40,7 +40,7 @@ MqttHandler::MqttHandler(const char *kpName, uint32_t stackDepth, UBaseType_t ux
   }
   else
   {
-    Serial.println("Reading MQTT credentials from EEPROM.");
+    Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgEepromReadMqttCreds));
 
     m_pBytesPackageRead = (Common::BytesPackage *)malloc(sizeof(Common::BytesPackage));
     EEPROM.get(0, m_pBytesPackageRead->length);

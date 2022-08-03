@@ -104,6 +104,8 @@ public:
     eAlertMsgMqttConnectionFailed,
     eAlertMsgMqttMaxTopicsReached,
     eAlertMsgDhtReadFail,
+    eAlertMsgEepromReadMqttCreds,
+    eAlertMsgEepromWriteMqttCreds,
     eAlertMsgMutexNotCreated,
     eAlertMsgDeepSleep
   };
