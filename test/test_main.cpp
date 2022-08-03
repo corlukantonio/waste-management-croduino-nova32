@@ -16,6 +16,21 @@ void tearDown(void)
 {
 }
 
+void GetHexStr_ValidHexStr(void)
+{
+    // Arrange
+
+    uint8_t mac[6] = {0xA2, 0x74, 0xDC, 0x5E, 0x9F, 0x18};
+
+    // Act
+
+    std::string macHexStr = Common::GetInstance()->GetHexStr(mac, 6);
+
+    // Assert
+
+    TEST_ASSERT_EQUAL_STRING("a274dc5e9f18", macHexStr.c_str());
+}
+
 void GetPackageWithArgsInBytes_ValidObjectRegistrationRequestPackage(void)
 {
     // Arrange
@@ -429,6 +444,7 @@ int RunSrcTests(void)
 {
     UNITY_BEGIN();
 
+    RUN_TEST(GetHexStr_ValidHexStr);
     RUN_TEST(GetPackageWithArgsInBytes_ValidObjectRegistrationRequestPackage);
     RUN_TEST(GetPackageWithArgsInBytes_ValidObjectActivationRequestPackage);
     RUN_TEST(GetPackageWithArgsInBytes_ValidObjectSettingsPackage);

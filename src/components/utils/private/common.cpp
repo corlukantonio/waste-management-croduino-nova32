@@ -90,6 +90,14 @@ const char *Common::GetAlertMessage(AlertMessageEnum alertMessage, size_t n, ...
     s = String("Mutex can not be created.");
     break;
 
+  case eAlertMsgEepromReadMqttCreds:
+    s = String("Reading MQTT credentials from EEPROM.");
+    break;
+
+  case eAlertMsgEepromWriteMqttCreds:
+    s = String("Writing MQTT credentials to EEPROM.");
+    break;
+
   case eAlertMsgDeepSleep:
     s = String("Going to deep sleep.");
     break;
