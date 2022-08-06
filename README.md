@@ -7,7 +7,9 @@
 **Waste Management Croduino Nova32** is a piece of software that goes to the board. It is responsible for managing board components and other external devices connected to the board. The figure below shows the interaction of the device with other components in the system.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/32845849/182188313-f2fa1a07-1f63-4737-baf9-a2d0e47afcfe.png" alt="waste-management-cloud-scheme-v2-iot-dev">
+  <img src="https://user-images.githubusercontent.com/32845849/183228312-2c60941c-84e4-4120-b6f3-329bfdfd8a32.png" alt="waste-management-cloud-scheme-v3">
 </p>
 
-**Figure 1.** - Waste Management System
+<p align="center">
+  <i><b>Figure 1.</b> - Waste Management System</i>
+</p>
