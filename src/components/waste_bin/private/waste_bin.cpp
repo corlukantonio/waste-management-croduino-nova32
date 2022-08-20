@@ -356,6 +356,10 @@ void WasteBin::SendRecord(const String kData) const
 
 void WasteBin::ReadSensorValues()
 {
+  xSemaphoreTake(m_mutex, portMAX_DELAY);
+
+  // Reading ultrasonic sensor values.
+
   digitalWrite(m_ultrasonicSensTrigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(m_ultrasonicSensTrigPin, HIGH);
@@ -363,9 +367,11 @@ void WasteBin::ReadSensorValues()
   digitalWrite(m_ultrasonicSensTrigPin, LOW);
 
   m_duration = pulseIn(m_ultrasonicSensEchoPin, HIGH);
-  m_cm = m_duration / 29 / 2;
+  m_duration = m_duration / 1000000; // Microseconds to seconds.
 
-  // Serial.println(m_cm);
+  m_speedOfSound = 344;
+
+  // Reading DHT11 values.
 
   m_humidity = m_pDht->readHumidity();
   m_temperatureCelsius = m_pDht->readTemperature();
@@ -375,8 +381,29 @@ void WasteBin::ReadSensorValues()
     Serial.println(Common::GetInstance()->GetAlertMessage(Common::eAlertMsgDhtReadFail));
   }
 
+  else
+  {
+    if (m_humidity >= 0 && m_humidity <= 100 && m_temperatureCelsius >= 0 && m_temperatureCelsius <= 50)
+    {
+      m_speedOfSound = 331.5 + (0.6 * m_temperatureCelsius) + (0.0124 * m_humidity);
+    }
+  }
+
+  m_cm = ((m_speedOfSound * m_duration) / 2) * 100;
+
+  // Serial.print("Humidity (%): ");
   // Serial.println(m_humidity);
+  // Serial.print("Temp. (celsius): ");
   // Serial.println(m_temperatureCelsius);
+
+  // Serial.print("Duration (s): ");
+  // Serial.println(m_duration);
+  // Serial.print("Speed of sound (m/s): ");
+  // Serial.println(m_speedOfSound);
+  // Serial.print("Distance (cm): ");
+  // Serial.println(m_cm);
+
+  xSemaphoreGive(m_mutex);
 }
 
 void WasteBin::Task()
@@ -397,7 +424,7 @@ void WasteBin::Task()
   {
     ReadSensorValues();
 
-    if (m_pMqttHandler->GetMqttClientObject()->connected() && !isnan(m_humidity) && !isnan(m_temperatureCelsius) && !m_isRecordPackageSent)
+    if (m_pMqttHandler->GetMqttClientObject()->connected() && !isnan(m_humidity) && !isnan(m_temperatureCelsius) && m_cm >= 2 && m_cm <= 400 && !m_isRecordPackageSent)
     {
       SendRecord();
 

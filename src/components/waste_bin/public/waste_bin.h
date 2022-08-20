@@ -141,6 +141,7 @@ private:
   ESP32Time *m_pRtc;                       //!< RTC.
   unsigned long m_startTime;               //!< Start time.
   unsigned long m_currentTime;             //!< Current time.
+  double m_speedOfSound;                   //!< Speed of sound.
   double m_duration, m_cm;                 //!< Ultrasonic sensor value.
   double m_humidity, m_temperatureCelsius; //!< Temperature and humidity sensor value.
   int m_timeToSleepUs;                     //!< Time to sleep.
