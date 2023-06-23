@@ -1,6 +1,6 @@
 language: python
 python:
-  - "3.9"
+  - '3.9'
 compiler:
   - gcc
 addons:
@@ -10,10 +10,11 @@ addons:
     packages:
       - gcc-6
       - g++-6
-    
+
 install:
   - pip install -U platformio==6.0.2
-  
+  - pip install -U urllib3==1.26.12
+
   - wget https://github.com/pallets/click/archive/refs/tags/8.1.3.zip -O /tmp/click-8.1.3.zip
   - unzip /tmp/click-8.1.3.zip -d /tmp/
 
