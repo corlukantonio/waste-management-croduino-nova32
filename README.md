@@ -14,3 +14,39 @@
 <p align="center">
   <i><b>Figure 1.</b> - Waste Management System</i>
 </p>
+
+## Tools and technologies
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Laptop</td>
+      <td>
+        <span></span>
+        <ul>
+          <li>Operating system: Windows 10 Pro</li>
+          <li>Code editor: Visual Studio Code</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>Board</td>
+      <td>
+        <span>Croduino Nova32</span>
+        <ul>
+          <li>Microcontroller: ESP32</li>
+          <li>Input voltage: 3.6V - 5.5V</li>
+          <li>Battery input voltage: max. 4.2 V</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## How to run it?
