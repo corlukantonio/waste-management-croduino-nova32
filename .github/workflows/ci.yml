@@ -28,9 +28,7 @@ jobs:
       - name: Install GCC
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-6 g++-6
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 60
+          sudo apt-get install -y gcc g++
 
       - name: Install dependencies
         run: |
