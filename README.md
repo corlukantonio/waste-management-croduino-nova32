@@ -28,7 +28,7 @@
     <tr>
       <td>Laptop</td>
       <td>
-        <span></span>
+        <span>Asus GL752VW</span>
         <ul>
           <li>Operating system: Windows 10 Pro</li>
           <li>Code editor: Visual Studio Code</li>
@@ -50,5 +50,3 @@
 </table>
 
 ## How to run it?
-
-test
