@@ -14,3 +14,5 @@
 <p align="center">
   <i><b>Figure 1.</b> - Waste Management System</i>
 </p>
+
+test
