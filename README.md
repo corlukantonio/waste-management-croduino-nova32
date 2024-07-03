@@ -67,6 +67,44 @@ Below is information about the tools and technologies used to build IoT device.
 
 ## How to run it?
 
+### Code adjusment
+
+Before you getting down to the connection with the board and uploading the firmware onto it, there are a few tweaks to the code that need to be made. The first one is in the `WiFiHandler` where you use the `AddWiFiCredentials` method to add WiFi credentials which are then used to connect to one of the networks that can be detected by the WiFi module on the board. Below is an example of a code block where example SSIDs and passwords have been added.
+
+```cpp
+void WiFiHandler::Task()
+{
+  WiFi.mode(WIFI_STA);
+
+  AddWiFiCredentials("EXAMPLE_SSID_1", "EXAMPLE_PASSWORD_1");
+  AddWiFiCredentials("EXAMPLE_SSID_2", "EXAMPLE_PASSWORD_2");
+
+  ConnectToWiFi();
+
+  while (true)
+  {
+#if LOG_STACK == 1
+    Serial.print("WiFiHandler: ");
+    Serial.println(uxTaskGetStackHighWaterMark(NULL));
+#endif
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+  }
+}
+```
+
+Another adjustment is in `MqttHandler` where credentials to connect to the MQTT server need to be set. Do this by completing a block of code inside the constructor as shown below.
+
+```cpp
+m_pMqttCredentials->flag = 0xFF;
+strcpy(m_pMqttCredentials->server, "EXAMPLE_SERVER");
+m_pMqttCredentials->port = 18850;
+strcpy(m_pMqttCredentials->user, "EXAMPLE_USER");
+strcpy(m_pMqttCredentials->password, "EXAMPLE_PASSWORD");
+```
+
+### Running the firmware
+
 To establish a connection with the board via USB, it is necessary to install [CH340 driver](https://sparks.gogo.co.nz/ch340.html). Once the connection is established, you can upload the firmware to the board by opening the PlatformIO Core CLI and running the following command:
 
 ```
