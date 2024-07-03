@@ -18,7 +18,9 @@
 
 ## Tools and technologies
 
-<table>
+Below is information about the tools and technologies used to build IoT device.
+
+<table align="center">
   <thead>
     <tr>
       <th>Name</th>
@@ -44,6 +46,16 @@
           <li>Microcontroller: ESP32</li>
           <li>Input voltage: 3.6V - 5.5V</li>
           <li>Battery input voltage: max. 4.2 V</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>Sensors</td>
+      <td>
+        <ul>
+          <li>DHT11 (temperature and humidity sensor)</li>
+          <li>HC-SR04 (ultrasonic distance sensor)</li>
+          <li>HC-SR501 (PIR movement sensor)</li>
         </ul>
       </td>
     </tr>
