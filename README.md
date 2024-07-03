@@ -16,6 +16,14 @@
   <i><b>Figure 1.</b> - Waste Management System</i>
 </p>
 
+<p align="center">
+  <img src="https://github.com/corlukantonio/waste-management-croduino-nova32/assets/32845849/90dd7b11-67d6-452e-8128-dcc7f7c74b77" alt="waste-management-device-sketch_bb">
+</p>
+
+<p align="center">
+  <i><b>Figure 2.</b> - Device sketch</i>
+</p>
+
 ## Tools and technologies
 
 Below is information about the tools and technologies used to build IoT device.
