@@ -35,6 +35,9 @@ Below is information about the tools and technologies used to build IoT device.
         <ul>
           <li>Operating system: Windows 10 Pro</li>
           <li>Code editor: Visual Studio Code</li>
+          <ul>
+            <li>PlatformIO IDE</li>
+          </ul>
         </ul>
       </td>
     </tr>
@@ -63,3 +66,21 @@ Below is information about the tools and technologies used to build IoT device.
 </table>
 
 ## How to run it?
+
+To establish a connection with the board via USB, it is necessary to install [CH340 driver](https://sparks.gogo.co.nz/ch340.html). Once the connection is established, you can upload the firmware to the board by opening the PlatformIO Core CLI and running the following command:
+
+```
+pio run -e esp32dev --target upload
+```
+
+Now that the firmware is uploaded and running, you can monitor what's happening on the board while it's still connected via USB by running the following command:
+
+```
+pio device monitor --baud 9600
+```
+
+Tests can be performed with:
+
+```
+pio test -e native
+```
