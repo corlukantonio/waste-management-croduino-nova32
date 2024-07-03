@@ -1,5 +1,6 @@
 # waste-management-croduino-nova32
 
+[![CI](https://github.com/corlukantonio/waste-management-croduino-nova32/actions/workflows/ci.yml/badge.svg)](https://github.com/corlukantonio/waste-management-croduino-nova32/actions/workflows/ci.yml)
 [![Build Status](https://app.travis-ci.com/corlukantonio/waste-management-croduino-nova32.svg?token=LFYd3nvNM4EhiD43TsCb&branch=main)](https://app.travis-ci.com/corlukantonio/waste-management-croduino-nova32)
 ![GitHub commits since tagged version](https://img.shields.io/github/commits-since/corlukantonio/waste-management-croduino-nova32/v1.0.1/main)
 
