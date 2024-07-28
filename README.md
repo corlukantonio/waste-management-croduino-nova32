@@ -108,12 +108,16 @@ Below is information about the tools and technologies used to build IoT device.
 
 <table align="center">
   <thead>
-    <th>Type</th>
-    <th>Value</th>
+    <tr>
+      <th>Type</th>
+      <th>Value</th>
+    </tr>
   </thead>
   <tbody>
-    <td>1 byte</td>
-    <td>8 bytes</td>
+    <tr>
+      <td>1 byte</td>
+      <td>8 bytes</td>
+    </tr>
   </tbody>
 </table>
 
