@@ -16,6 +16,8 @@
   <i><b>Figure 1.</b> - Waste Management System</i>
 </p>
 
+The image below gives a closer look at what components are used and how they are wired.
+
 <p align="center">
   <img src="https://github.com/corlukantonio/waste-management-croduino-nova32/assets/32845849/90dd7b11-67d6-452e-8128-dcc7f7c74b77" alt="waste-management-device-sketch_bb">
 </p>
