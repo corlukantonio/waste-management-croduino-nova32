@@ -73,6 +73,50 @@ Below is information about the tools and technologies used to build IoT device.
   </tbody>
 </table>
 
+## Package description
+
+### ObjectRecordBasePackage
+
+<table align="center">
+  <thead>
+    <tr>
+      <th>Package type</th>
+      <th>Package version</th>
+      <th>MAC</th>
+      <th>RTC</th>
+      <th>Number of values</th>
+      <th>Object record value</th>
+      <th>RSSI</th>
+      <th>CRC</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1 byte</td>
+      <td>1 byte</td>
+      <td>6 bytes</td>
+      <td>6 bytes</td>
+      <td>1 byte</td>
+      <td>9 * Number of values bytes</td>
+      <td>2 bytes</td>
+      <td>1 byte</td>
+    </tr>
+  </tbody>
+</table>
+
+### ObjectRecordValue
+
+<table align="center">
+  <thead>
+    <th>Type</th>
+    <th>Value</th>
+  </thead>
+  <tbody>
+    <td>1 byte</td>
+    <td>8 bytes</td>
+  </tbody>
+</table>
+
 ## How to run it?
 
 ### Code adjusment
