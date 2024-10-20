@@ -26,6 +26,14 @@ The image below gives a closer look at what components are used and how they are
   <i><b>Figure 2.</b> - Device sketch</i>
 </p>
 
+The video below shows what the solution looks like in action.
+
+<p align="center">
+  <a href="https://youtu.be/TOmVYZEeiqY">
+  <img src="https://img.youtube.com/vi/TOmVYZEeiqY/0.jpg" alt="Waste Management">
+  </a>
+</p>
+
 ## Tools and technologies
 
 Below is information about the tools and technologies used to build IoT device.
